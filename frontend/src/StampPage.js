@@ -7,17 +7,6 @@ function StampPage({ studentId, onLogout }) {
   const [qrInput, setQrInput] = useState('');
   const [message, setMessage] = useState('');
 
-  const fetchClubs = async () => {
-    try {
-      const response = await fetch('/api/clubs');
-      const data = await response.json();
-      setClubs(data);
-    } catch (error) {
-      console.error('Error fetching clubs:', error);
-      setMessage('동아리 목록을 불러오는 데 실패했습니다.');
-    }
-  };
-
   useEffect(() => {
     const fetchStampStatus = async () => {
       try {
@@ -30,11 +19,22 @@ function StampPage({ studentId, onLogout }) {
       }
     };
 
+    const fetchClubs = async () => {
+      try {
+        const response = await fetch('/api/clubs');
+        const data = await response.json();
+        setClubs(data);
+      } catch (error) {
+        console.error('Error fetching clubs:', error);
+        setMessage('동아리 목록을 불러오는 데 실패했습니다.');
+      }
+    };
+
     fetchStampStatus();
     fetchClubs();
     const interval = setInterval(fetchStampStatus, 5000); // Refresh status every 5 seconds
     return () => clearInterval(interval);
-  }, [studentId, fetchClubs]); // Added fetchClubs to dependency array
+  }, [studentId]); // Added fetchClubs to dependency array
 
   const handleQrScan = async () => {
     if (!qrInput) {
