@@ -1,4 +1,7 @@
-import studentsData from './club-stamp-rally.json';
+const fs = require('fs');
+const path = require('path');
+
+const studentsData = JSON.parse(fs.readFileSync(path.join(__dirname, 'club-stamp-rally.json'), 'utf8'));
 const students = studentsData.map(s => ({ ...s, studentId: String(s.studentId) }));
 
 const clubs = [
