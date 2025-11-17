@@ -30,6 +30,17 @@ function StampPage({ studentId, onLogout }) {
   };
 
   useEffect(() => {
+    const fetchStampStatus = async () => {
+      try {
+        const response = await fetch(`/api/status/${studentId}`);
+        const data = await response.json();
+        setStampStatus(data);
+      } catch (error) {
+        console.error('Error fetching stamp status:', error);
+        setMessage('스탬프 현황을 불러오는 데 실패했습니다.');
+      }
+    };
+
     fetchStampStatus();
     fetchClubs();
     const interval = setInterval(fetchStampStatus, 5000); // Refresh status every 5 seconds
@@ -56,7 +67,10 @@ function StampPage({ studentId, onLogout }) {
       if (data.success) {
         setMessage('스탬프 획득!');
         setQrInput('');
-        fetchStampStatus(); // Refresh status after stamping
+        // Manually update status to avoid waiting for the interval
+        const res = await fetch(`/api/status/${studentId}`);
+        const updatedData = await res.json();
+        setStampStatus(updatedData);
       } else {
         setMessage(data.message || '스탬프 획득 실패.');
       }
@@ -69,9 +83,6 @@ function StampPage({ studentId, onLogout }) {
   if (!stampStatus) {
     return <div className="loading-container">로딩 중...</div>;
   }
-
-  const 본관_clubs = clubs.filter(club => club.location === '본관');
-  const 후관_clubs = clubs.filter(club => club.location === '후관');
 
   const 본관_stamped_count = stampStatus.본관_stamps;
   const 후관_stamped_count = stampStatus.후관_stamps;
