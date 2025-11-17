@@ -1,7 +1,5 @@
-const students = [
-  { studentId: '20250001', password: 'pass1' },
-  { studentId: '20250002', password: 'pass2' },
-];
+const studentsData = require('./club-stamp-rally.json');
+const students = studentsData.map(s => ({ ...s, studentId: String(s.studentId) }));
 
 const clubs = [
   { id: 'club1', name: '과학 탐구반', location: '후관' },
