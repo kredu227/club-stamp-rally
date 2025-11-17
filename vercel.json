@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "frontend/api/server.js": {
+      "includeFiles": "frontend/api/club-stamp-rally.json"
+    }
+  }
+}
