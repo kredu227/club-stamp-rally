@@ -5,6 +5,30 @@
   overflow: hidden;
 }
 
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+}
+
+.logout-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+}
+
 .tab-content {
   flex-grow: 1;
   overflow-y: auto; /* 내용이 길어지면 스크롤 */

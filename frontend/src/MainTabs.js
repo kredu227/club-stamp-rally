@@ -5,7 +5,7 @@ import BoothLayout from './BoothLayout';
 import ClubActivities from './ClubActivities';
 import './MainTabs.css'; // 탭 바 스타일을 위한 CSS 파일
 
-function MainTabs({ studentId }) {
+function MainTabs({ studentId, onLogout }) { // onLogout 프롭스 추가
   const [activeTab, setActiveTab] = useState('stamp'); // 기본 활성 탭은 스탬프 판
   const navigate = useNavigate();
 
@@ -29,6 +29,11 @@ function MainTabs({ studentId }) {
 
   return (
     <div className="main-tabs-container">
+      {/* 헤더 추가 */}
+      <div className="main-header">
+        <span>{studentId}님, 환영합니다!</span>
+        <button onClick={onLogout} className="logout-button">로그아웃</button>
+      </div>
       <div className="tab-content">
         {renderContent()}
       </div>
