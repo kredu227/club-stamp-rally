@@ -1,4 +1,4 @@
-const studentsData = require('./club-stamp-rally.json');
+import studentsData from './club-stamp-rally.json';
 const students = studentsData.map(s => ({ ...s, studentId: String(s.studentId) }));
 
 const clubs = [
