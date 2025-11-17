@@ -3,5 +3,11 @@
     "api/server.js": {
       "includeFiles": "frontend/api/club-stamp-rally.json"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/server.js"
+    }
+  ]
 }
