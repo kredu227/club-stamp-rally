@@ -1,0 +1,47 @@
+.main-tabs-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 전체 화면 높이 */
+  overflow: hidden;
+}
+
+.tab-content {
+  flex-grow: 1;
+  overflow-y: auto; /* 내용이 길어지면 스크롤 */
+  padding: 10px;
+  background-color: #f0f2f5;
+}
+
+.bottom-tab-bar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  padding: 10px 0;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+}
+
+.bottom-tab-bar button {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px 5px;
+  font-size: 16px;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.bottom-tab-bar button.active {
+  color: #007bff; /* 활성 탭 색상 */
+  font-weight: bold;
+  border-bottom: 2px solid #007bff;
+}
+
+.bottom-tab-bar button:hover {
+  color: #0056b3;
+}
