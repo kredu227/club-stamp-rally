@@ -1,0 +1,202 @@
+.stamp-page-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  width: 100%;
+  max-width: 600px;
+  margin: 20px;
+  text-align: left;
+}
+
+.stamp-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.stamp-page-header h2 {
+  color: #333;
+  font-size: 1.6em;
+  margin: 0;
+}
+
+.logout-button {
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #5a6268;
+}
+
+.mission-status {
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.mission-status h3 {
+  color: #495057;
+  font-size: 1.3em;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.mission-status p {
+  margin: 5px 0;
+  color: #343a40;
+}
+
+.location-status {
+  margin-bottom: 10px;
+}
+
+.progress-bar-container {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  height: 10px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #28a745;
+  width: 0%;
+  border-radius: 5px;
+  transition: width 0.5s ease-in-out;
+}
+
+.progress-bar.본관 {
+  background-color: #007bff;
+}
+
+.progress-bar.후관 {
+  background-color: #ffc107;
+}
+
+.mission-clear-text {
+  color: #28a745;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.overall-mission-clear {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 6px;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.club-list {
+  margin-bottom: 25px;
+}
+
+.club-list h3 {
+  color: #495057;
+  font-size: 1.3em;
+  margin-bottom: 15px;
+}
+
+.club-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.club-item {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 0.9em;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+  border: 1px solid #e0e0e0;
+}
+
+.club-item.stamped {
+  background-color: #e6ffe6;
+  border-color: #28a745;
+  font-weight: bold;
+  color: #155724;
+}
+
+.stamp-icon {
+  margin-top: 5px;
+  font-size: 1.2em;
+}
+
+.qr-scan-section {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.qr-scan-section h3 {
+  color: #495057;
+  font-size: 1.3em;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.qr-scan-section input {
+  width: calc(100% - 40px);
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+  font-size: 1em;
+}
+
+.qr-scan-section button {
+  background-color: #17a2b8;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+.qr-scan-section button:hover {
+  background-color: #138496;
+}
+
+.info-message {
+  color: #007bff;
+  font-size: 0.9em;
+  margin-top: 10px;
+}
+
+.loading-container {
+  text-align: center;
+  font-size: 1.2em;
+  color: #666;
+  padding: 50px;
+}
