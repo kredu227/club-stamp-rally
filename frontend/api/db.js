@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+const { kv } = require('@vercel/kv');
 const fs = require('fs');
 const path = require('path');
 
