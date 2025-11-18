@@ -1,13 +1,17 @@
 {
   "functions": {
     "api/server.js": {
-      "includeFiles": "frontend/api/club-stamp-rally.json"
+      "includeFiles": "api/club-stamp-rally.json"
     }
   },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/server.js"
+      "destination": "/api/server"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
