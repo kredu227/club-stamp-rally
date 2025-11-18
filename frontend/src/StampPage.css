@@ -59,7 +59,8 @@
   font-size: 0.95em;
   font-weight: 500;
   color: #495057;
-  position: relative;
+  position: relative; /* z-index를 위해 추가 */
+  z-index: 0; /* 텍스트가 별 위에 오도록 설정 */
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -86,10 +87,11 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(0deg); /* 회전 제거 */
-  font-size: 2.8em;
+  font-size: 5.6em; /* 2배 키움 */
   font-weight: 900;
   color: #FFD700; /* Gold - 노란색 */
-  /* font-family와 text-shadow는 별 이모지에 불필요하므로 제거 */
+  opacity: 0.7; /* 투명도 70% */
+  z-index: -1; /* 텍스트 뒤로 배치 */
   pointer-events: none;
 }
 
