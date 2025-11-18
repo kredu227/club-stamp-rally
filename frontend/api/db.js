@@ -46,6 +46,12 @@ function getClubs() {
 
 // Vercel KV를 사용하도록 수정 (async 함수)
 async function recordStampByQrCode(studentId, qrCode) {
+  // Vercel 환경 변수가 설정되어 있지 않으면 스탬프 기록 불가
+  if (!process.env.KV_REST_API_URL) {
+    console.log('[LOG] Vercel KV environment variables not found. Stamp recording is disabled for local JSON file fallback.');
+    return { success: false, message: '스탬프 기록은 Vercel KV가 연결된 배포 환경에서만 가능합니다.' };
+  }
+
   const club = clubs.find(c => c.qrCode === qrCode);
   if (!club) {
     return { success: false, message: '유효하지 않은 QR 코드입니다.' };
@@ -76,13 +82,49 @@ async function recordStampByQrCode(studentId, qrCode) {
 
 // Vercel KV를 사용하도록 수정 (async 함수)
 async function getStudentStampStatus(studentId) {
+  // Vercel 환경 변수가 설정되어 있지 않으면 로컬 파일 시스템을 fallback으로 사용
+  if (!process.env.KV_REST_API_URL) {
+    console.log('[LOG] Vercel KV environment variables not found. Falling back to local JSON file.');
+    try {
+      // 로컬 JSON 파일에서 학생 데이터를 찾습니다.
+      const student = students.find(s => s.studentId === studentId);
+      const stampedClubIds = student ? student.stampedClubs || [] : [];
+
+      const 본관_clubs = clubs.filter(club => club.location === '본관');
+      const 후관_clubs = clubs.filter(club => club.location === '후관');
+
+      const 본관_stamps = 본관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
+      const 후관_stamps = 후관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
+
+      const 본관_mission_clear = 본관_stamps >= 5;
+      const 후관_mission_clear = 후관_stamps >= 3;
+      const overall_mission_clear = 본관_mission_clear && 후관_mission_clear;
+
+      return {
+        totalStamps: stampedClubIds.length,
+        본관_stamps,
+        후관_stamps,
+        본관_mission_clear,
+        후관_mission_clear,
+        overall_mission_clear,
+        stampedClubs: stampedClubIds,
+        allClubs: clubs.map(club => ({ id: club.id, name: club.name, location: club.location, stamped: stampedClubIds.includes(club.id) }))
+      };
+    } catch (error) {
+      console.error('[ERROR] Failed to read or process local JSON file:', error);
+      // 로컬 파일 처리 중 에러가 발생하면 빈 상태를 반환하거나 에러를 던질 수 있습니다.
+      throw new Error('Failed to get stamp status from local fallback.');
+    }
+  }
+
+  // Vercel KV 로직 (기존 코드)
   const studentStampKey = `stamps_${studentId}`;
-  console.log(`[LOG] Generated KV Key: ${studentStampKey}`); // 로그 추가
+  console.log(`[LOG] Generated KV Key: ${studentStampKey}`);
 
   try {
     console.log(`[LOG] Attempting to get data from Vercel KV for key: ${studentStampKey}`);
     const stamps = await kv.get(studentStampKey) || {};
-    console.log(`[LOG] Successfully received data from Vercel KV:`, stamps); // 성공 로그 추가
+    console.log(`[LOG] Successfully received data from Vercel KV:`, stamps);
 
     const stampedClubIds = Object.keys(stamps).filter(clubId => stamps[clubId]);
 
@@ -108,7 +150,7 @@ async function getStudentStampStatus(studentId) {
     };
   } catch (error) {
     console.error(`[ERROR] Failed to get data from Vercel KV for key: ${studentStampKey}`, error);
-    throw error; // 에러를 다시 던져서 상위 핸들러에서 잡을 수 있도록 함
+    throw error;
   }
 }
 
@@ -117,117 +159,78 @@ async function getStudentStampStatus(studentId) {
 // 모든 학생의 스탬프 데이터를 가져오는 함수
 
 async function getAllStudentStamps() {
+  if (!process.env.KV_REST_API_URL) {
+    console.log('[LOG] Vercel KV environment variables not found. Returning empty array for getAllStudentStamps.');
+    return [];
+  }
 
   const studentStampKeys = [];
-
-  // 'stamps_' 접두사를 가진 모든 키를 스캔합니다.
-
   for await (const key of kv.scanIterator({ match: 'stamps_*' })) {
-
     studentStampKeys.push(key);
-
   }
 
   if (studentStampKeys.length === 0) {
-
     return [];
-
   }
 
-  // 모든 키에 해당하는 데이터를 한 번에 가져옵니다.
-
   const allStampsData = await kv.mget(...studentStampKeys);
-
   return allStampsData.map((stamps, index) => ({
-
     studentId: studentStampKeys[index].replace('stamps_', ''),
-
     stamps: stamps || {}
-
   }));
-
 }
 
 
-
-// 관리자용 통계 데이터를 계산하는 함수
 
 async function getAdminStats() {
+  if (!process.env.KV_REST_API_URL) {
+    console.log('[LOG] Vercel KV environment variables not found. Returning zero stats for getAdminStats.');
+    return { totalParticipants: 0, totalStamps: 0, missionCompleters: 0 };
+  }
 
   const allStudentData = await getAllStudentStamps();
-
   const totalParticipants = allStudentData.length;
-
   let totalStamps = 0;
-
   let missionCompleters = 0;
 
-
-
   allStudentData.forEach(student => {
-
     const stampedClubIds = Object.keys(student.stamps);
-
     totalStamps += stampedClubIds.length;
 
-
-
     const 본관_stamps = clubs.filter(c => c.location === '본관' && stampedClubIds.includes(c.id)).length;
-
     const 후관_stamps = clubs.filter(c => c.location === '후관' && stampedClubIds.includes(c.id)).length;
 
-
-
     if (본관_stamps >= 5 && 후관_stamps >= 3) {
-
       missionCompleters++;
-
     }
-
   });
 
-
-
   return { totalParticipants, totalStamps, missionCompleters };
-
 }
 
 
 
-// 모든 학생의 현황 정보를 가져오는 함수
-
 async function getAllStudentStatus() {
+  if (!process.env.KV_REST_API_URL) {
+    console.log('[LOG] Vercel KV environment variables not found. Returning empty array for getAllStudentStatus.');
+    return [];
+  }
 
   const allStudentData = await getAllStudentStamps();
-
   const allStatus = allStudentData.map(student => {
-
     const stampedClubIds = Object.keys(student.stamps);
-
     const 본관_stamps = clubs.filter(c => c.location === '본관' && stampedClubIds.includes(c.id)).length;
-
     const 후관_stamps = clubs.filter(c => c.location === '후관' && stampedClubIds.includes(c.id)).length;
-
     const mission_clear = 본관_stamps >= 5 && 후관_stamps >= 3;
 
-
-
     return {
-
       studentId: student.studentId,
-
       totalStamps: stampedClubIds.length,
-
       missionClear: mission_clear,
-
     };
-
   });
 
-
-
   return allStatus;
-
 }
 
 
@@ -254,36 +257,25 @@ module.exports = {
 
   
 
-  // 스탬프를 수동으로 관리하는 함수 (추가/삭제)
-
   async function manageStamp(studentId, clubId, action) {
-
-    const studentStampKey = `stamps_${studentId}`;
-
-    const currentStamps = await kv.get(studentStampKey) || {};
-
-  
-
-    if (action === 'add') {
-
-      currentStamps[clubId] = true;
-
-    } else if (action === 'remove') {
-
-      delete currentStamps[clubId];
-
-    } else {
-
-      return { success: false, message: 'Invalid action' };
-
-    }
-
-  
-
-    await kv.set(studentStampKey, currentStamps);
-
-    return { success: true, updatedStamps: currentStamps };
-
+  if (!process.env.KV_REST_API_URL) {
+    console.log('[LOG] Vercel KV environment variables not found. Stamp management is disabled.');
+    return { success: false, message: '스탬프 관리는 Vercel KV가 연결된 배포 환경에서만 가능합니다.' };
   }
+
+  const studentStampKey = `stamps_${studentId}`;
+  const currentStamps = await kv.get(studentStampKey) || {};
+
+  if (action === 'add') {
+    currentStamps[clubId] = true;
+  } else if (action === 'remove') {
+    delete currentStamps[clubId];
+  } else {
+    return { success: false, message: 'Invalid action' };
+  }
+
+  await kv.set(studentStampKey, currentStamps);
+  return { success: true, updatedStamps: currentStamps };
+}
 
   
