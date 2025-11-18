@@ -41,7 +41,7 @@
 }
 
 .club-grid.본관 {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
 }
 
 .club-grid.후관 {

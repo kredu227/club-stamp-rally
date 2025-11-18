@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './StampPage.css';
 
 function StampPage({ studentId }) {
   const [stampStatus, setStampStatus] = useState(null);

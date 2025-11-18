@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
+import './QrScanner.css';
 
 const QrScanner = ({ onScanSuccess, onScanFailure }) => {
   const scannerRef = useRef(null);
@@ -9,7 +10,11 @@ const QrScanner = ({ onScanSuccess, onScanFailure }) => {
     if (!scannerRef.current) {
       const html5QrcodeScanner = new Html5QrcodeScanner(
         "qr-code-full-region",
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        { 
+          fps: 10, 
+          qrbox: { width: 250, height: 250 },
+          facingMode: 'environment' // 후면 카메라를 우선적으로 사용
+        },
         false
       );
 
@@ -35,12 +40,20 @@ const QrScanner = ({ onScanSuccess, onScanFailure }) => {
   }, [onScanSuccess, onScanFailure]);
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center' }}>
-      <h2>QR 코드 스캔</h2>
-      <div id="qr-code-full-region" style={{ width: '100%', maxWidth: '500px', margin: '0 auto' }}></div>
+    <div className="qr-scanner-container">
+      <div id="qr-code-full-region" className="qr-scanner-viewport"></div>
+      <div className="qr-scanner-overlay">
+        <div className="qr-scanner-guide">
+          <div className="qr-scanner-corner top-left"></div>
+          <div className="qr-scanner-corner top-right"></div>
+          <div className="qr-scanner-corner bottom-left"></div>
+          <div className="qr-scanner-corner bottom-right"></div>
+        </div>
+        <p className="qr-scanner-text">QR 코드를 사각형 안에 맞춰주세요</p>
+      </div>
       {scanResult && (
-        <p style={{ marginTop: '20px', fontSize: '1.2em', fontWeight: 'bold' }}>
-          스캔 결과: {scanResult}
+        <p className="scan-result-text">
+          스캔 완료!
         </p>
       )}
     </div>
