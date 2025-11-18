@@ -34,8 +34,6 @@
   overflow-y: auto; /* 내용이 길어지면 스크롤 */
   padding: 10px;
   background-color: #f0f2f5;
-  max-width: 600px; /* 스탬프 판 탭의 max-width에 맞춤 */
-  margin: 0 auto; /* 중앙 정렬 */
 }
 
 .bottom-tab-bar {
