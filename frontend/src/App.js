@@ -1,44 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import Login from './Login';
-import MainTabs from './MainTabs'; // MainTabs 컴포넌트 임포트
+import MainTabs from './MainTabs';
+import AdminLogin from './admin/AdminLogin'; // 추가
+import AdminDashboard from './admin/AdminDashboard'; // 추가
 import './App.css';
+
+// 관리자 대시보드 접근 제어를 위한 보호된 라우트 컴포넌트
+function AdminProtectedRoute({ children }) {
+  const isAdminAuthenticated = !!sessionStorage.getItem('adminAuth');
+  return isAdminAuthenticated ? children : <Navigate to="/admin/login" />;
+}
 
 function AppContent() {
   const [studentId, setStudentId] = useState(null);
   const navigate = useNavigate();
 
-  // Check for stored studentId on initial load (e.g., from localStorage)
   useEffect(() => {
     const storedStudentId = localStorage.getItem('studentId');
     if (storedStudentId) {
       setStudentId(storedStudentId);
-      navigate('/main'); // 로그인 정보가 있으면 바로 메인 페이지로 이동
-    } else {
-      navigate('/login'); // 로그인 정보가 없으면 로그인 페이지로 이동
     }
-  }, []); // 빈 배열로 한 번만 실행되도록 설정
+  }, []);
 
   const handleLogin = (id) => {
     setStudentId(id);
-    localStorage.setItem('studentId', id); // Store studentId for persistence
-    navigate('/main'); // 로그인 성공 시 MainTabs 페이지로 이동
+    localStorage.setItem('studentId', id);
+    navigate('/main');
   };
 
   const handleLogout = () => {
     setStudentId(null);
-    localStorage.removeItem('studentId'); // Clear stored studentId
-    navigate('/login'); // 로그아웃 시 로그인 페이지로 이동
+    localStorage.removeItem('studentId');
+    navigate('/login');
   };
 
   return (
     <div className="App">
       <Routes>
+        {/* 학생용 라우트 */}
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route
-          path="/main/*" // MainTabs 내부 라우팅을 위해 와일드카드 추가
+          path="/main/*"
           element={studentId ? <MainTabs studentId={studentId} onLogout={handleLogout} /> : <Navigate to="/login" />}
         />
+
+        {/* 관리자용 라우트 */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminProtectedRoute>
+              <AdminDashboard />
+            </AdminProtectedRoute>
+          }
+        />
+
+        {/* 기본 경로 리디렉션 */}
         <Route path="*" element={<Navigate to={studentId ? "/main" : "/login"} />} />
       </Routes>
     </div>
