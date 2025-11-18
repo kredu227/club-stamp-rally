@@ -130,6 +130,7 @@
   position: relative;
   width: 90%;
   max-width: 500px;
+  aspect-ratio: 1 / 1; /* 정사각형 비율 강제 */
 }
 
 .qr-scanner-close-button {
