@@ -16,34 +16,29 @@ const QrScanner = ({ onScanSuccess, onScanFailure }) => {
 
     const startScanner = async () => {
       try {
-        const cameras = await Html5Qrcode.getCameras();
-        if (cameras && cameras.length) {
-          const cameraId = cameras.find(camera => camera.facing === 'environment')?.id || cameras[0].id;
-          
-          await html5QrCode.start(
-            cameraId,
-            { fps: 10 },
-            (decodedText, decodedResult) => {
-              onScanSuccess(decodedText, decodedResult);
-              if (html5QrCodeRef.current?.isScanning) {
-                html5QrCodeRef.current.stop().catch(err => console.error("스캐너 중지 실패.", err));
-              }
-            },
-            (errorMessage) => { /* 무시 */ }
-          );
+        // 직접 후면 카메라를 사용하도록 제약 조건을 전달합니다.
+        await html5QrCode.start(
+          { facingMode: "environment" }, // ID 대신 제약 조건 객체를 전달
+          { fps: 10 },
+          (decodedText, decodedResult) => {
+            onScanSuccess(decodedText, decodedResult);
+            if (html5QrCodeRef.current?.isScanning) {
+              html5QrCodeRef.current.stop().catch(err => console.error("스캐너 중지 실패.", err));
+            }
+          },
+          (errorMessage) => { /* 무시 */ }
+        );
 
-          // 중요: 라이브러리가 video 요소를 생성한 후 스타일을 강제로 적용
-          const videoElement = containerRef.current.querySelector('video');
-          if (videoElement) {
-            videoElement.style.width = '100%';
-            videoElement.style.height = '100%';
-            videoElement.style.objectFit = 'cover';
-          }
-        } else {
-          throw new Error("카메라를 찾을 수 없습니다.");
+        // 비디오 요소 스타일 강제 적용
+        const videoElement = containerRef.current.querySelector('video');
+        if (videoElement) {
+          videoElement.style.width = '100%';
+          videoElement.style.height = '100%';
+          videoElement.style.objectFit = 'cover';
         }
       } catch (err) {
-        onScanFailure(err.message || "카메라를 시작할 수 없습니다.");
+        console.error("QR 스캐너 시작 실패:", err);
+        onScanFailure(err.message || "카메라를 시작할 수 없습니다. 새로고침 후 다시 시도해주세요.");
       }
     };
 
@@ -57,7 +52,6 @@ const QrScanner = ({ onScanSuccess, onScanFailure }) => {
   }, [onScanSuccess, onScanFailure]);
 
   return (
-    // 이제 이 div는 라이브러리가 video 요소를 삽입할 컨테이너 역할을 합니다.
     <div id="qr-video-container" ref={containerRef} className="qr-scanner-container-v3"></div>
   );
 };
