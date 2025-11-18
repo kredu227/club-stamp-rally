@@ -8,6 +8,8 @@ function StampPage({ studentId }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [isManualInputOpen, setIsManualInputOpen] = useState(false);
+  const [manualQrCode, setManualQrCode] = useState('');
 
   const fetchData = useCallback(async () => {
     // 데이터 로딩 시 항상 로딩 상태로 설정
@@ -37,19 +39,46 @@ function StampPage({ studentId }) {
   }, [fetchData]);
 
   const handleScanSuccess = async (decodedText) => {
-    setIsScannerOpen(false); // 스캔 성공 시 스캐너 닫기
+    setIsScannerOpen(false); // 스캐너 즉시 닫기
+    alert("스캔 완료!"); // 사용자에게 즉각적인 피드백 제공
+
     try {
       const response = await fetch('/api/stamp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ studentId, qrCode: decodedText }),
       });
+      
+      // 서버 응답을 기다린 후 스탬프 상태 새로고침
+      await response.json();
+      fetchData(); 
+      
+    } catch (error) {
+      // 네트워크 오류 등 실패 시 사용자에게 알림
+      alert('스탬프 처리 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleManualSubmit = async (e) => {
+    e.preventDefault();
+    if (!manualQrCode.trim()) {
+      alert('QR 코드를 입력해주세요.');
+      return;
+    }
+    setIsManualInputOpen(false);
+    try {
+      const response = await fetch('/api/stamp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentId, qrCode: manualQrCode.trim() }),
+      });
       const data = await response.json();
       alert(data.message || '스탬프가 처리되었습니다.');
-      fetchData(); // 스탬프 상태 새로고침
+      fetchData();
     } catch (error) {
-      alert('스탬프 업데이트 중 오류가 발생했습니다.');
+      alert('스탬프 처리 중 오류가 발생했습니다.');
     }
+    setManualQrCode(''); // 입력 필드 초기화
   };
 
   const handleScanFailure = (error) => {
@@ -106,6 +135,27 @@ function StampPage({ studentId }) {
         </div>
       )}
 
+      {isManualInputOpen && (
+        <div className="qr-scanner-modal">
+          <div className="manual-input-modal-content">
+            <h3>QR 코드 직접 입력</h3>
+            <form onSubmit={handleManualSubmit}>
+              <input
+                type="text"
+                value={manualQrCode}
+                onChange={(e) => setManualQrCode(e.target.value)}
+                placeholder="QR 코드를 입력하세요"
+                className="manual-input-field"
+              />
+              <div className="manual-input-buttons">
+                <button type="submit" className="manual-submit-button">제출</button>
+                <button type="button" onClick={() => setIsManualInputOpen(false)} className="manual-close-button">취소</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div className="mission-status-v2">
         <h3>미션 진행 상황</h3>
         <p>총 스탬프: {totalStamps}개</p>
@@ -128,6 +178,9 @@ function StampPage({ studentId }) {
         )}
         <button onClick={() => setIsScannerOpen(true)} className="qr-scan-button">
           QR 스캔하기
+        </button>
+        <button onClick={() => setIsManualInputOpen(true)} className="manual-entry-button">
+          QR 스캔에 오류가 있나요?
         </button>
       </div>
 

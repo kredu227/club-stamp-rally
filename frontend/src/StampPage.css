@@ -148,3 +148,64 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
+.manual-entry-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 5px;
+  margin-top: 10px;
+  font-size: 0.9em;
+}
+
+.manual-input-modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.manual-input-modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.manual-input-field {
+  width: 100%;
+  padding: 12px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.manual-input-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.manual-submit-button,
+.manual-close-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.manual-submit-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.manual-close-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+
