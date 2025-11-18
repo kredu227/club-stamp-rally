@@ -44,11 +44,13 @@ app.post('/api/stamp', async (req, res) => {
 // Get student stamp status endpoint
 app.get('/api/status/:studentId', async (req, res) => {
   const { studentId } = req.params;
+  console.log(`[LOG] Fetching stamp status for studentId: ${studentId}`); // 로그 추가
   try {
     const status = await db.getStudentStampStatus(studentId);
+    console.log(`[LOG] Successfully fetched status for ${studentId}:`, status); // 성공 로그 추가
     res.json(status);
   } catch (error) {
-    console.error('Error getting student status:', error);
+    console.error(`[ERROR] Error getting student status for ${studentId}:`, error); // 에러 로그 강화
     res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
   }
 });

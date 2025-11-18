@@ -1,49 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import './StampPage.css'; // We will create this CSS file later
+import React, { useState, useEffect, useRef } from 'react';
 
 function StampPage({ studentId }) {
   const [stampStatus, setStampStatus] = useState(null);
   const [clubs, setClubs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const intervalRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
+      // 첫 로딩 시에만 "로딩 중..."을 표시하여 깜빡임 방지
+      if (!stampStatus && !error) {
+        setIsLoading(true);
+      }
+      
       try {
-        // 두 fetch 요청을 병렬로 처리
         const [statusResponse, clubsResponse] = await Promise.all([
           fetch(`/api/status/${studentId}`),
-          fetch('/api/clubs')
+          fetch('/api/clubs'),
         ]);
 
         if (!statusResponse.ok || !clubsResponse.ok) {
-          throw new Error('데이터를 불러오는 데 실패했습니다.');
+          throw new Error('API 응답이 올바르지 않습니다.');
         }
 
         const statusData = await statusResponse.json();
         const clubsData = await clubsResponse.json();
 
+        if (error) setError(null); // 성공 시 이전 오류 메시지 제거
         setStampStatus(statusData);
         setClubs(clubsData);
+
       } catch (err) {
-        console.error('Error fetching data:', err);
-        setError('데이터 로딩 중 오류가 발생했습니다.');
+        console.error('데이터 로딩 중 오류:', err);
+        setError('데이터 로딩 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        // 오류 발생 시 자동 새로고침 중단
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
       } finally {
-        setIsLoading(false);
+        if (isLoading) {
+            setIsLoading(false);
+        }
       }
     };
 
-    fetchData();
-    const interval = setInterval(fetchData, 5000); // 5초마다 데이터 갱신
+    fetchData(); // 첫 데이터 로딩 실행
 
-    return () => clearInterval(interval); // 컴포넌트 언마운트 시 인터벌 정리
+    // 기존 인터벌이 있다면 정리하고 새로 설정
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(fetchData, 5000);
+
+    // 컴포넌트가 언마운트될 때 인터벌 정리
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, [studentId]);
 
   if (isLoading) {
     return <div className="loading-container">로딩 중...</div>;
   }
+
+
 
   if (error) {
     return <div className="error-container">{error}</div>;

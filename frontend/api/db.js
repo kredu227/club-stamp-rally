@@ -77,29 +77,39 @@ async function recordStampByQrCode(studentId, qrCode) {
 // Vercel KV를 사용하도록 수정 (async 함수)
 async function getStudentStampStatus(studentId) {
   const studentStampKey = `stamps_${studentId}`;
-  const stamps = await kv.get(studentStampKey) || {};
-  const stampedClubIds = Object.keys(stamps).filter(clubId => stamps[clubId]);
+  console.log(`[LOG] Generated KV Key: ${studentStampKey}`); // 로그 추가
 
-  const 본관_clubs = clubs.filter(club => club.location === '본관');
-  const 후관_clubs = clubs.filter(club => club.location === '후관');
+  try {
+    console.log(`[LOG] Attempting to get data from Vercel KV for key: ${studentStampKey}`);
+    const stamps = await kv.get(studentStampKey) || {};
+    console.log(`[LOG] Successfully received data from Vercel KV:`, stamps); // 성공 로그 추가
 
-  const 본관_stamps = 본관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
-  const 후관_stamps = 후관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
+    const stampedClubIds = Object.keys(stamps).filter(clubId => stamps[clubId]);
 
-  const 본관_mission_clear = 본관_stamps >= 5;
-  const 후관_mission_clear = 후관_stamps >= 3;
-  const overall_mission_clear = 본관_mission_clear && 후관_mission_clear;
+    const 본관_clubs = clubs.filter(club => club.location === '본관');
+    const 후관_clubs = clubs.filter(club => club.location === '후관');
 
-  return {
-    totalStamps: stampedClubIds.length,
-    본관_stamps,
-    후관_stamps,
-    본관_mission_clear,
-    후관_mission_clear,
-    overall_mission_clear,
-    stampedClubs: stampedClubIds,
-    allClubs: clubs.map(club => ({ id: club.id, name: club.name, location: club.location, stamped: stampedClubIds.includes(club.id) }))
-  };
+    const 본관_stamps = 본관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
+    const 후관_stamps = 후관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
+
+    const 본관_mission_clear = 본관_stamps >= 5;
+    const 후관_mission_clear = 후관_stamps >= 3;
+    const overall_mission_clear = 본관_mission_clear && 후관_mission_clear;
+
+    return {
+      totalStamps: stampedClubIds.length,
+      본관_stamps,
+      후관_stamps,
+      본관_mission_clear,
+      후관_mission_clear,
+      overall_mission_clear,
+      stampedClubs: stampedClubIds,
+      allClubs: clubs.map(club => ({ id: club.id, name: club.name, location: club.location, stamped: stampedClubIds.includes(club.id) }))
+    };
+  } catch (error) {
+    console.error(`[ERROR] Failed to get data from Vercel KV for key: ${studentStampKey}`, error);
+    throw error; // 에러를 다시 던져서 상위 핸들러에서 잡을 수 있도록 함
+  }
 }
 
 
