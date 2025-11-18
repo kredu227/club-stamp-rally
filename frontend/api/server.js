@@ -105,6 +105,17 @@ adminRouter.get('/all-student-status', async (req, res) => {
   }
 });
 
+// 전체 학생 스탬프 데이터 API (동아리별 집계를 위해 추가)
+adminRouter.get('/all-student-stamps', async (req, res) => {
+  try {
+    const stampsData = await db.getAllStudentStamps();
+    res.json({ success: true, stampsData });
+  } catch (error) {
+    console.error('Error getting all student stamps:', error);
+    res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+  }
+});
+
 // 스탬프 수동 관리 API
 adminRouter.post('/manage-stamp', async (req, res) => {
   const { studentId, clubId, action } = req.body;
