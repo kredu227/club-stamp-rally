@@ -65,7 +65,21 @@ function StampPage({ studentId }) {
   } = stampStatus;
 
   const 본관_clubs = clubs.filter(club => club.location === '본관');
-  const 후관_clubs = clubs.filter(club => club.location === '후관');
+  const 후관_clubs_raw = clubs.filter(club => club.location === '후관');
+
+  // 후관 그리드 항목 재배열 (3x4, 마지막 줄 양 끝 빈칸)
+  const 후관_grid_items = [];
+  if (후관_clubs_raw.length > 0) {
+    // 첫 9개 동아리 채우기
+    for (let i = 0; i < 9; i++) {
+      후관_grid_items.push(후관_clubs_raw[i] || { id: `placeholder-${i}`, empty: true });
+    }
+    // 마지막 줄: [빈칸, 10번째 동아리, 빈칸]
+    후관_grid_items.push({ id: 'empty-left', empty: true });
+    후관_grid_items.push(후관_clubs_raw[9] || { id: 'placeholder-9', empty: true });
+    후관_grid_items.push({ id: 'empty-right', empty: true });
+  }
+
 
   return (
     <div className="stamp-page-container">
@@ -96,22 +110,22 @@ function StampPage({ studentId }) {
       <div className="club-list-section">
         <div className="club-group">
           <h3>🏢 본관</h3>
-          <div className="club-grid">
+          <div className="club-grid 본관">
             {본관_clubs.map(club => (
               <div key={club.id} className={`club-item ${stampedClubs.includes(club.id) ? 'stamped' : ''}`}>
                 {club.name}
-                {stampedClubs.includes(club.id) && <span className="stamp-icon">✅</span>}
               </div>
             ))}
           </div>
         </div>
         <div className="club-group">
           <h3>🏫 후관</h3>
-          <div className="club-grid">
-            {후관_clubs.map(club => (
-              <div key={club.id} className={`club-item ${stampedClubs.includes(club.id) ? 'stamped' : ''}`}>
-                {club.name}
-                {stampedClubs.includes(club.id) && <span className="stamp-icon">✅</span>}
+          <div className="club-grid 후관">
+            {후관_grid_items.map(item => (
+              item.empty ?
+              <div key={item.id} className="club-item empty"></div> :
+              <div key={item.id} className={`club-item ${stampedClubs.includes(item.id) ? 'stamped' : ''}`}>
+                {item.name}
               </div>
             ))}
           </div>
