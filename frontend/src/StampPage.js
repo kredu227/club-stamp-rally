@@ -1,18 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function StampPage({ studentId }) {
   const [stampStatus, setStampStatus] = useState(null);
   const [clubs, setClubs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const intervalRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      // 첫 로딩 시에만 "로딩 중..."을 표시하여 깜빡임 방지
-      if (!stampStatus && !error) {
-        setIsLoading(true);
-      }
+      setIsLoading(true);
       
       try {
         const [statusResponse, clubsResponse] = await Promise.all([
@@ -27,37 +23,20 @@ function StampPage({ studentId }) {
         const statusData = await statusResponse.json();
         const clubsData = await clubsResponse.json();
 
-        if (error) setError(null); // 성공 시 이전 오류 메시지 제거
+        setError(null); // 성공 시 이전 오류 메시지 제거
         setStampStatus(statusData);
         setClubs(clubsData);
 
       } catch (err) {
         console.error('데이터 로딩 중 오류:', err);
         setError('데이터 로딩 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-        // 오류 발생 시 자동 새로고침 중단
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-        }
       } finally {
-        if (isLoading) {
-            setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
 
-    fetchData(); // 첫 데이터 로딩 실행
+    fetchData(); // 데이터 로딩 실행
 
-    // 기존 인터벌이 있다면 정리하고 새로 설정
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(fetchData, 5000);
-
-    // 컴포넌트가 언마운트될 때 인터벌 정리
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
   }, [studentId]);
 
   if (isLoading) {
@@ -85,6 +64,9 @@ function StampPage({ studentId }) {
     stampedClubs = []
   } = stampStatus;
 
+  const 본관_clubs = clubs.filter(club => club.location === '본관');
+  const 후관_clubs = clubs.filter(club => club.location === '후관');
+
   return (
     <div className="stamp-page-container">
       <div className="mission-status">
@@ -111,15 +93,28 @@ function StampPage({ studentId }) {
         )}
       </div>
 
-      <div className="club-list">
-        <h3>동아리 목록</h3>
-        <div className="club-grid">
-          {clubs.map(club => (
-            <div key={club.id} className={`club-item ${stampedClubs.includes(club.id) ? 'stamped' : ''}`}>
-              {club.name} ({club.location})
-              {stampedClubs.includes(club.id) && <span className="stamp-icon">✅</span>}
-            </div>
-          ))}
+      <div className="club-list-section">
+        <div className="club-group">
+          <h3>🏢 본관</h3>
+          <div className="club-grid">
+            {본관_clubs.map(club => (
+              <div key={club.id} className={`club-item ${stampedClubs.includes(club.id) ? 'stamped' : ''}`}>
+                {club.name}
+                {stampedClubs.includes(club.id) && <span className="stamp-icon">✅</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="club-group">
+          <h3>🏫 후관</h3>
+          <div className="club-grid">
+            {후관_clubs.map(club => (
+              <div key={club.id} className={`club-item ${stampedClubs.includes(club.id) ? 'stamped' : ''}`}>
+                {club.name}
+                {stampedClubs.includes(club.id) && <span className="stamp-icon">✅</span>}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

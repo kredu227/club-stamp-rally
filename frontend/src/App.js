@@ -17,7 +17,7 @@ function AppContent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedStudentId = localStorage.getItem('studentId');
+    const storedStudentId = sessionStorage.getItem('studentId');
     if (storedStudentId) {
       setStudentId(storedStudentId);
     }
@@ -25,13 +25,13 @@ function AppContent() {
 
   const handleLogin = (id) => {
     setStudentId(id);
-    localStorage.setItem('studentId', id);
+    sessionStorage.setItem('studentId', id);
     navigate('/main');
   };
 
   const handleLogout = () => {
     setStudentId(null);
-    localStorage.removeItem('studentId');
+    sessionStorage.removeItem('studentId');
     navigate('/login');
   };
 
