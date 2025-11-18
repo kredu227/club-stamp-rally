@@ -81,16 +81,15 @@
 }
 
 .club-item-v2.stamped-v2::after {
-  content: '쾅!';
+  content: '⭐'; /* 노란색 별 이모지로 변경 */
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) rotate(-15deg);
+  transform: translate(-50%, -50%) rotate(0deg); /* 회전 제거 */
   font-size: 2.8em;
   font-weight: 900;
-  color: rgba(255, 82, 82, 0.5);
-  font-family: 'Gaegu', cursive, sans-serif;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  color: #FFD700; /* Gold - 노란색 */
+  /* font-family와 text-shadow는 별 이모지에 불필요하므로 제거 */
   pointer-events: none;
 }
 
