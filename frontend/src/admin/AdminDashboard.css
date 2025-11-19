@@ -1,23 +1,197 @@
-/* ... (기존 AdminDashboard.css 내용) ... */
+/* AdminDashboard.css */
 
-.reset-coupon-button {
-  background-color: #ffc107; /* 경고 또는 주의를 나타내는 노란색 */
-  color: #212529;
+.admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #343a40;
+  color: white;
+}
+
+.admin-header h1 {
+  margin: 0;
+  font-size: 1.5em;
+}
+
+.admin-tabs {
+  display: flex;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.admin-tab {
+  padding: 15px 20px;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  font-size: 1em;
+  color: #495057;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.admin-tab.active {
+  color: #007bff;
+  border-bottom: 3px solid #007bff;
+  font-weight: bold;
+}
+
+.admin-tab:hover {
+  background-color: #e9ecef;
+}
+
+.admin-content {
+  padding: 20px;
+  flex-grow: 1;
+  overflow-y: auto;
+  background-color: #f4f6f9;
+}
+
+/* 실시간 현황 섹션 */
+.stats-section h2, .student-list-section h2, .club-status-section h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.stat-item {
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.stat-item h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: #6c757d;
+}
+
+.stat-item p {
+  margin-bottom: 0;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* 테이블 스타일 */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.admin-table th, .admin-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.admin-table thead th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+}
+
+.admin-table tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+.sortable-header {
+  cursor: pointer;
+}
+
+/* 버튼 스타일 */
+.manage-button, .delete-button, .reset-coupon-button, .close-button {
   border: none;
   padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
-  display: block;
-  width: 100%;
-  margin-top: 15px;
   transition: background-color 0.2s;
 }
 
-.reset-coupon-button:hover {
-  background-color: #e0a800;
+.manage-button {
+  background-color: #007bff;
+  color: white;
 }
+.manage-button:hover { background-color: #0056b3; }
+
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+}
+.delete-button:hover { background-color: #c82333; }
+
+.reset-coupon-button {
+  background-color: #ffc107;
+  color: #212529;
+  display: block;
+  width: 100%;
+  margin-top: 15px;
+}
+.reset-coupon-button:hover { background-color: #e0a800; }
 
 .close-button {
-  /* ... (기존 close-button 스타일) ... */
+  background-color: #6c757d;
+  color: white;
+  width: 100%;
+  margin-top: 20px;
+  padding: 10px;
+}
+.close-button:hover { background-color: #5a6268; }
+
+/* 모달 스타일 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.stamp-list {
+  list-style-type: none;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.stamp-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
 }
