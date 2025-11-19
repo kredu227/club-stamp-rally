@@ -4,6 +4,7 @@ import './StampPage.css';
 import QrScanner from './QrScanner';
 
 function StampPage({ studentId }) {
+  const navigate = useNavigate();
   const [stampStatus, setStampStatus] = useState(null);
   const [clubs, setClubs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -119,7 +120,6 @@ function StampPage({ studentId }) {
     return <div className="loading-container">스탬프 정보를 표시할 수 없습니다.</div>;
   }
 
-  const navigate = useNavigate();
   const {
     totalStamps = 0,
     본관_stamps = 0,

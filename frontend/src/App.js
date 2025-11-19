@@ -10,7 +10,27 @@ import './App.css';
 // ... (기존 코드)
 
 function AppContent() {
-  // ... (기존 코드)
+  const [studentId, setStudentId] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedStudentId = sessionStorage.getItem('studentId');
+    if (storedStudentId) {
+      setStudentId(storedStudentId);
+    }
+  }, []);
+
+  const handleLogin = (id) => {
+    setStudentId(id);
+    sessionStorage.setItem('studentId', id);
+    navigate('/main');
+  };
+
+  const handleLogout = () => {
+    setStudentId(null);
+    sessionStorage.removeItem('studentId');
+    navigate('/login');
+  };
 
   return (
     <div className="App">
@@ -28,7 +48,17 @@ function AppContent() {
 
         {/* 관리자용 라우트 */}
         <Route path="/admin/login" element={<AdminLogin />} />
-        // ... (기존 코드)
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminProtectedRoute>
+              <AdminDashboard />
+            </AdminProtectedRoute>
+          }
+        />
+
+        {/* 기본 경로 리디렉션 */}
+        <Route path="*" element={<Navigate to={studentId ? "/main" : "/login"} />} />
       </Routes>
     </div>
   );
