@@ -14,16 +14,10 @@ function AdminProtectedRoute({ children }) {
 }
 
 function AppContent() {
-  const [studentId, setStudentId] = useState(null);
+  // 컴포넌트 초기화 시점에 sessionStorage를 즉시 확인하여 상태를 설정합니다.
+  // 이렇게 해야 새로고침 시 첫 렌더링에서 로그아웃(리디렉션) 되는 것을 막을 수 있습니다.
+  const [studentId, setStudentId] = useState(() => sessionStorage.getItem('studentId'));
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // 학생 로그인 정보를 sessionStorage에서 확인 (새로고침 시 유지, 창 닫으면 초기화)
-    const storedStudentId = sessionStorage.getItem('studentId');
-    if (storedStudentId) {
-      setStudentId(storedStudentId);
-    }
-  }, []);
 
   const handleLogin = (id) => {
     setStudentId(id);
