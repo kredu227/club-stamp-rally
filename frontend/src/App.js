@@ -7,7 +7,11 @@ import AdminLogin from './admin/AdminLogin'; // 추가
 import AdminDashboard from './admin/AdminDashboard'; // 추가
 import './App.css';
 
-// ... (기존 코드)
+// 관리자 대시보드 접근 제어를 위한 보호된 라우트 컴포넌트
+function AdminProtectedRoute({ children }) {
+  const isAdminAuthenticated = !!sessionStorage.getItem('adminAuth');
+  return isAdminAuthenticated ? children : <Navigate to="/admin/login" />;
+}
 
 function AppContent() {
   const [studentId, setStudentId] = useState(null);
