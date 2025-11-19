@@ -18,8 +18,8 @@ function AppContent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 학생 로그인 정보를 localStorage에서 확인 (브라우저 닫아도 유지)
-    const storedStudentId = localStorage.getItem('studentId');
+    // 학생 로그인 정보를 sessionStorage에서 확인 (새로고침 시 유지, 창 닫으면 초기화)
+    const storedStudentId = sessionStorage.getItem('studentId');
     if (storedStudentId) {
       setStudentId(storedStudentId);
     }
@@ -27,13 +27,13 @@ function AppContent() {
 
   const handleLogin = (id) => {
     setStudentId(id);
-    localStorage.setItem('studentId', id); // localStorage에 저장
+    sessionStorage.setItem('studentId', id); // sessionStorage에 저장
     navigate('/main');
   };
 
   const handleLogout = () => {
     setStudentId(null);
-    localStorage.removeItem('studentId'); // localStorage에서 제거
+    sessionStorage.removeItem('studentId'); // sessionStorage에서 제거
     navigate('/login');
   };
 
