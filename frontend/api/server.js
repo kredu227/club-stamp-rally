@@ -55,6 +55,21 @@ app.get('/api/status/:studentId', async (req, res) => {
   }
 });
 
+// Use coupon endpoint
+app.post('/api/coupon/use', async (req, res) => {
+  const { studentId } = req.body;
+  if (!studentId) {
+    return res.status(400).json({ success: false, message: 'Student ID is required.' });
+  }
+  try {
+    const result = await db.useCoupon(studentId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error using coupon:', error);
+    res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+  }
+});
+
 // Admin login endpoint
 // Admin login endpoint
 app.post('/api/admin/login', (req, res) => {

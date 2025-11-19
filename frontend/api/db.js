@@ -7,32 +7,32 @@ const students = studentsData.map(s => ({ ...s, studentId: String(s.studentId) }
 
 const clubs = [
   // 본관 그룹
-  { id: 'club1', name: '글로벌리더십', location: '본관', qrCode: 'qr_club1' },
-  { id: 'club2', name: '그대의말로', location: '본관', qrCode: 'qr_club2' },
-  { id: 'club3', name: '레드타이', location: '본관', qrCode: 'qr_club3' },
-  { id: 'club4', name: 'mRNA', location: '본관', qrCode: 'qr_club4' },
-  { id: 'club5', name: '나라사랑', location: '본관', qrCode: 'qr_club5' },
-  { id: 'club6', name: '방송부', location: '본관', qrCode: 'qr_club6' },
-  { id: 'club7', name: '농구부', location: '본관', qrCode: 'qr_club7' },
-  { id: 'club8', name: '또래상담', location: '본관', qrCode: 'qr_club8' },
-  { id: 'club9', name: '독수공방', location: '본관', qrCode: 'qr_club9' },
-  { id: 'club10', name: '아크매틱', location: '본관', qrCode: 'qr_club10' },
-  { id: 'club11', name: '개척', location: '본관', qrCode: 'qr_club11' },
-  { id: 'club12', name: '국과수', location: '본관', qrCode: 'qr_club12' },
-  { id: 'club13', name: '가피', location: '본관', qrCode: 'qr_club13' },
-  { id: 'club14', name: '에코', location: '본관', qrCode: 'qr_club14' },
-  { id: 'club15', name: '여가활용부', location: '본관', qrCode: 'qr_club15' },
+  { id: 'club1', name: '글로벌리더십', location: '본관', qrCode: 'a1b2c3' },
+  { id: 'club2', name: '그대의말로', location: '본관', qrCode: 'd4e5f6' },
+  { id: 'club3', name: '레드타이', location: '본관', qrCode: 'g7h8i9' },
+  { id: 'club4', name: 'mRNA', location: '본관', qrCode: 'j0k1l2' },
+  { id: 'club5', name: '나라사랑', location: '본관', qrCode: 'm3n4o5' },
+  { id: 'club6', name: '방송부', location: '본관', qrCode: 'p6q7r8' },
+  { id: 'club7', name: '농구부', location: '본관', qrCode: 's9t0u1' },
+  { id: 'club8', name: '또래상담', location: '본관', qrCode: 'v2w3x4' },
+  { id: 'club9', name: '독수공방', location: '본관', qrCode: 'y5z6a7' },
+  { id: 'club10', name: '아크매틱', location: '본관', qrCode: 'b8c9d0' },
+  { id: 'club11', name: '개척', location: '본관', qrCode: 'e1f2g3' },
+  { id: 'club12', name: '국과수', location: '본관', qrCode: 'h4i5j6' },
+  { id: 'club13', name: '가피', location: '본관', qrCode: 'k7l8m9' },
+  { id: 'club14', name: '에코', location: '본관', qrCode: 'n0o1p2' },
+  { id: 'club15', name: '여가활용부', location: '본관', qrCode: 'q3r4s5' },
   // 후관 그룹
-  { id: 'club16', name: '생각의판', location: '후관', qrCode: 'qr_club16' },
-  { id: 'club17', name: '정치언론부', location: '후관', qrCode: 'qr_club17' },
-  { id: 'club18', name: '대중문화탐구', location: '후관', qrCode: 'qr_club18' },
-  { id: 'club19', name: '내꿈찾아삼만리', location: '후관', qrCode: 'qr_club19' },
-  { id: 'club20', name: '축구부', location: '후관', qrCode: 'qr_club20' },
-  { id: 'club21', name: '역사랑', location: '후관', qrCode: 'qr_club21' },
-  { id: 'club22', name: '화생방', location: '후관', qrCode: 'qr_club22' },
-  { id: 'club23', name: 'BIOHOLIC', location: '후관', qrCode: 'qr_club23' },
-  { id: 'club24', name: '아이러닝', location: '후관', qrCode: 'qr_club24' },
-  { id: 'club25', name: '그루터기', location: '후관', qrCode: 'qr_club25' },
+  { id: 'club16', name: '생각의판', location: '후관', qrCode: 't6u7v8' },
+  { id: 'club17', name: '정치언론부', location: '후관', qrCode: 'w9x0y1' },
+  { id: 'club18', name: '대중문화탐구', location: '후관', qrCode: 'z2a3b4' },
+  { id: 'club19', name: '내꿈찾아삼만리', location: '후관', qrCode: 'c5d6e7' },
+  { id: 'club20', name: '축구부', location: '후관', qrCode: 'f8g9h0' },
+  { id: 'club21', name: '역사랑', location: '후관', qrCode: 'i1j2k3' },
+  { id: 'club22', name: '화생방', location: '후관', qrCode: 'l4m5n6' },
+  { id: 'club23', name: 'BIOHOLIC', location: '후관', qrCode: 'o7p8q9' },
+  { id: 'club24', name: '아이러닝', location: '후관', qrCode: 'r0s1t2' },
+  { id: 'club25', name: '그루터기', location: '후관', qrCode: 'u3v4w5' },
 ];
 
 function validateStudent(studentId, password) {
@@ -42,6 +42,20 @@ function validateStudent(studentId, password) {
 
 function getClubs() {
   return clubs;
+}
+
+// Vercel KV에서 학생의 모든 데이터를 가져오는 도우미 함수
+async function getStudentData(studentId) {
+  if (!process.env.KV_REST_API_URL) return null;
+  const studentKey = `student_${studentId}`;
+  return await kv.get(studentKey) || { stamps: {}, couponUsed: false };
+}
+
+// Vercel KV에 학생 데이터를 저장하는 도우미 함수
+async function setStudentData(studentId, data) {
+  if (!process.env.KV_REST_API_URL) return;
+  const studentKey = `student_${studentId}`;
+  await kv.set(studentKey, data);
 }
 
 // Vercel KV를 사용하도록 수정 (async 함수)
@@ -57,26 +71,31 @@ async function recordStampByQrCode(studentId, qrCode) {
     return { success: false, message: '유효하지 않은 QR 코드입니다.' };
   }
   const clubId = club.id;
-  const studentStampKey = `stamps_${studentId}`;
-
-  // KV에서 학생의 현재 스탬프 데이터를 가져옵니다.
-  const currentStamps = await kv.get(studentStampKey) || {};
+  
+  const studentData = await getStudentData(studentId);
+  const currentStamps = studentData.stamps;
 
   if (currentStamps[clubId]) {
     return { success: false, message: '이미 스탬프를 획득한 동아리입니다.' };
   }
 
-  // 새로운 스탬프를 추가하고 KV에 저장합니다.
+  // 새로운 스탬프를 추가
   const newStamps = { ...currentStamps, [clubId]: true };
-  await kv.set(studentStampKey, newStamps);
+  studentData.stamps = newStamps;
+  
+  await setStudentData(studentId, studentData);
 
   // 스탬프 기록 후 업데이트된 학생 스탬프 현황을 가져옵니다.
   const updatedStatus = await getStudentStampStatus(studentId);
 
+  // 방금 스탬프를 찍어서 미션 클리어가 되었는지 확인
+  const justClearedMission = !updatedStatus.couponUsed && updatedStatus.overall_mission_clear;
+
   return {
     success: true,
     message: `${club.name} 스탬프를 획득했습니다!`,
-    overall_mission_clear: updatedStatus.overall_mission_clear
+    overall_mission_clear: updatedStatus.overall_mission_clear,
+    justClearedMission: justClearedMission // 방금 미션을 클리어했는지 여부
   };
 }
 
@@ -89,6 +108,7 @@ async function getStudentStampStatus(studentId) {
       // 로컬 JSON 파일에서 학생 데이터를 찾습니다.
       const student = students.find(s => s.studentId === studentId);
       const stampedClubIds = student ? student.stampedClubs || [] : [];
+      const couponUsed = student ? student.couponUsed || false : false;
 
       const 본관_clubs = clubs.filter(club => club.location === '본관');
       const 후관_clubs = clubs.filter(club => club.location === '후관');
@@ -108,51 +128,59 @@ async function getStudentStampStatus(studentId) {
         후관_mission_clear,
         overall_mission_clear,
         stampedClubs: stampedClubIds,
+        couponUsed, // 쿠폰 사용 여부 추가
         allClubs: clubs.map(club => ({ id: club.id, name: club.name, location: club.location, stamped: stampedClubIds.includes(club.id) }))
       };
     } catch (error) {
       console.error('[ERROR] Failed to read or process local JSON file:', error);
-      // 로컬 파일 처리 중 에러가 발생하면 빈 상태를 반환하거나 에러를 던질 수 있습니다.
       throw new Error('Failed to get stamp status from local fallback.');
     }
   }
 
-  // Vercel KV 로직 (기존 코드)
-  const studentStampKey = `stamps_${studentId}`;
-  console.log(`[LOG] Generated KV Key: ${studentStampKey}`);
+  // Vercel KV 로직
+  const studentData = await getStudentData(studentId);
+  const stamps = studentData.stamps;
+  const couponUsed = studentData.couponUsed;
 
-  try {
-    console.log(`[LOG] Attempting to get data from Vercel KV for key: ${studentStampKey}`);
-    const stamps = await kv.get(studentStampKey) || {};
-    console.log(`[LOG] Successfully received data from Vercel KV:`, stamps);
+  const stampedClubIds = Object.keys(stamps).filter(clubId => stamps[clubId]);
 
-    const stampedClubIds = Object.keys(stamps).filter(clubId => stamps[clubId]);
+  const 본관_clubs = clubs.filter(club => club.location === '본관');
+  const 후관_clubs = clubs.filter(club => club.location === '후관');
 
-    const 본관_clubs = clubs.filter(club => club.location === '본관');
-    const 후관_clubs = clubs.filter(club => club.location === '후관');
+  const 본관_stamps = 본관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
+  const 후관_stamps = 후관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
 
-    const 본관_stamps = 본관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
-    const 후관_stamps = 후관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
+  const 본관_mission_clear = 본관_stamps >= 5;
+  const 후관_mission_clear = 후관_stamps >= 3;
+  const overall_mission_clear = 본관_mission_clear && 후관_mission_clear;
 
-    const 본관_mission_clear = 본관_stamps >= 5;
-    const 후관_mission_clear = 후관_stamps >= 3;
-    const overall_mission_clear = 본관_mission_clear && 후관_mission_clear;
-
-    return {
-      totalStamps: stampedClubIds.length,
-      본관_stamps,
-      후관_stamps,
-      본관_mission_clear,
-      후관_mission_clear,
-      overall_mission_clear,
-      stampedClubs: stampedClubIds,
-      allClubs: clubs.map(club => ({ id: club.id, name: club.name, location: club.location, stamped: stampedClubIds.includes(club.id) }))
-    };
-  } catch (error) {
-    console.error(`[ERROR] Failed to get data from Vercel KV for key: ${studentStampKey}`, error);
-    throw error;
-  }
+  return {
+    totalStamps: stampedClubIds.length,
+    본관_stamps,
+    후관_stamps,
+    본관_mission_clear,
+    후관_mission_clear,
+    overall_mission_clear,
+    stampedClubs: stampedClubIds,
+    couponUsed, // 쿠폰 사용 여부 추가
+    allClubs: clubs.map(club => ({ id: club.id, name: club.name, location: club.location, stamped: stampedClubIds.includes(club.id) }))
+  };
 }
+
+// 쿠폰 사용 처리 함수
+async function useCoupon(studentId) {
+  if (!process.env.KV_REST_API_URL) {
+    return { success: false, message: '쿠폰 사용은 Vercel KV가 연결된 배포 환경에서만 가능합니다.' };
+  }
+  const studentData = await getStudentData(studentId);
+  if (studentData.couponUsed) {
+    return { success: false, message: '이미 쿠폰을 사용했습니다.' };
+  }
+  studentData.couponUsed = true;
+  await setStudentData(studentId, studentData);
+  return { success: true, message: '쿠폰 사용이 완료되었습니다.' };
+}
+
 
 
 
@@ -236,24 +264,16 @@ async function getAllStudentStatus() {
 
 
 module.exports = {
-
   validateStudent,
-
   getClubs,
-
   recordStampByQrCode,
-
   getStudentStampStatus,
-
+  useCoupon, // 쿠폰 사용 함수 추가
   getAllStudentStamps, // for admin
-
   getAdminStats,       // for admin
-
-    getAllStudentStatus, // for admin
-
-    manageStamp,         // for admin
-
-  };
+  getAllStudentStatus, // for admin
+  manageStamp,         // for admin
+};
 
   
 

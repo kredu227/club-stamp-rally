@@ -35,7 +35,7 @@ function Login({ onLogin }) {
   return (
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
-        <h2>동아리 축제 스탬프 랠리</h2>
+        <h2>2025 평택고 동아리 학술제 투어</h2>
         <div className="form-group">
           <label htmlFor="studentId">학번</label>
           <input

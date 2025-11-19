@@ -1,0 +1,86 @@
+.coupon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh; /* 전체 화면 높이를 차지하도록 설정 */
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #f0f2f5;
+}
+
+.coupon-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around; /* 콘텐츠를 균등하게 배분 */
+  width: 100%;
+  max-width: 400px;
+  height: 80vh; /* 화면 높이의 80%를 차지 */
+  padding: 30px;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.coupon-title {
+  font-size: 2em;
+  color: #333;
+  margin: 0;
+}
+
+.coupon-image-placeholder {
+  width: 100%;
+  max-width: 250px;
+  height: 250px;
+  background-color: #e9ecef;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #adb5bd;
+  font-size: 1.2em;
+  margin: 20px 0;
+}
+
+.sotteok-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* 이미지가 잘리지 않고 비율을 유지하도록 */
+  border-radius: 10px;
+}
+
+.coupon-instruction {
+  font-size: 1.1em;
+  color: #555;
+  margin: 0;
+}
+
+.coupon-button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.coupon-button:hover {
+  background-color: #0056b3;
+}
+
+.coupon-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #dc3545;
+  margin-top: 10px;
+}

@@ -1,212 +1,45 @@
-.stamp-page-container-v2 {
-  background-color: #f0f8ff; /* AliceBlue */
-  padding: 20px;
-  font-family: 'Noto Sans KR', sans-serif;
-}
+/* StampPage.css */
 
-.mission-status-v2 {
-  background-color: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  margin-bottom: 30px;
-}
+/* ... (기존 CSS 코드) ... */
 
-.club-list-section-v2 {
-  margin-top: 30px;
-}
-
-.club-group-v2 {
-  background-color: white;
-  border: 2px dashed #87ceeb; /* SkyBlue */
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  margin-bottom: 30px;
-}
-
-.club-group-v2 h3 {
-  color: #333;
-  text-align: center;
-  font-size: 1.5em;
-  margin-top: 0;
-  margin-bottom: 25px;
-}
-
-.club-grid-v2 {
-  display: grid;
-  gap: 15px;
-}
-
-.club-grid-v2.main-building {
-  grid-template-columns: repeat(3, 1fr); /* 3열로 변경 */
-}
-
-.club-grid-v2.annex-building {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.club-item-v2 {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 10px;
-  aspect-ratio: 1 / 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 8px;
-  font-size: 0.95em;
-  font-weight: 500;
-  color: #495057;
-  position: relative; /* z-index를 위해 추가 */
-  z-index: 0; /* 텍스트가 별 위에 오도록 설정 */
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.club-item-v2:not(.empty-v2):hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.club-item-v2.empty-v2 {
-  background-color: transparent;
-  border: 2px dashed #e0e0e0;
-}
-
-.club-item-v2.stamped-v2 {
-  background-color: #f0fff0; /* Honeydew */
-  border-color: #98fb98; /* PaleGreen */
-  color: #2e8b57; /* SeaGreen */
-  font-weight: bold;
-}
-
-.club-item-v2.stamped-v2::after {
-  content: '⭐'; /* 노란색 별 이모지로 변경 */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(0deg); /* 회전 제거 */
-  font-size: 5.6em; /* 2배 키움 */
-  font-weight: 900;
-  color: #FFD700; /* Gold - 노란색 */
-  opacity: 0.7; /* 투명도 70% */
-  z-index: -1; /* 텍스트 뒤로 배치 */
-  pointer-events: none;
-}
-
-.qr-scan-button {
-  display: block;
-  width: 100%;
-  padding: 15px;
-  margin-top: 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
+.coupon-section {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #fff;
   border-radius: 8px;
-  font-size: 1.2em;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.coupon-button-v2 {
+  width: 100%;
+  padding: 12px;
+  font-size: 1.1em;
   font-weight: bold;
+  color: white;
+  background-color: #28a745; /* 성공적인 느낌의 초록색 */
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.qr-scan-button:hover {
-  background-color: #0056b3;
+.coupon-button-v2:hover {
+  background-color: #218838;
 }
 
-.qr-scanner-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+.coupon-button-v2:disabled {
+  background-color: #6c757d; /* 회색 */
+  cursor: not-allowed;
 }
 
-.qr-scanner-modal-content {
-  position: relative;
-  width: 90%;
-  max-width: 500px;
+.coupon-section.used {
+  background-color: #f8f9fa;
 }
 
-.qr-scanner-close-button {
-  position: absolute;
-  bottom: -50px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: white;
-  color: #333;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 20px;
-  font-size: 1em;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-.manual-entry-button {
-  background: none;
-  border: none;
-  color: #007bff;
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 5px;
+.post-coupon-message {
   margin-top: 10px;
-  font-size: 0.9em;
-}
-
-.manual-input-modal-content {
-  background-color: white;
-  padding: 30px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
-}
-
-.manual-input-modal-content h3 {
-  margin-top: 0;
-  margin-bottom: 20px;
-}
-
-.manual-input-field {
-  width: 100%;
-  padding: 12px;
-  font-size: 1em;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-.manual-input-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.manual-submit-button,
-.manual-close-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1em;
+  font-size: 0.95em;
+  color: #333;
   font-weight: bold;
-  cursor: pointer;
 }
-
-.manual-submit-button {
-  background-color: #28a745;
-  color: white;
-}
-
-.manual-close-button {
-  background-color: #6c757d;
-  color: white;
-}
-
-

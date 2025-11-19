@@ -2,38 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import Login from './Login';
 import MainTabs from './MainTabs';
+import CouponPage from './CouponPage';
 import AdminLogin from './admin/AdminLogin'; // 추가
 import AdminDashboard from './admin/AdminDashboard'; // 추가
 import './App.css';
 
-// 관리자 대시보드 접근 제어를 위한 보호된 라우트 컴포넌트
-function AdminProtectedRoute({ children }) {
-  const isAdminAuthenticated = !!sessionStorage.getItem('adminAuth');
-  return isAdminAuthenticated ? children : <Navigate to="/admin/login" />;
-}
+import CouponPage from './CouponPage'; // CouponPage 컴포넌트 import
+
+// ... (기존 코드)
 
 function AppContent() {
-  const [studentId, setStudentId] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedStudentId = sessionStorage.getItem('studentId');
-    if (storedStudentId) {
-      setStudentId(storedStudentId);
-    }
-  }, []);
-
-  const handleLogin = (id) => {
-    setStudentId(id);
-    sessionStorage.setItem('studentId', id);
-    navigate('/main');
-  };
-
-  const handleLogout = () => {
-    setStudentId(null);
-    sessionStorage.removeItem('studentId');
-    navigate('/login');
-  };
+  // ... (기존 코드)
 
   return (
     <div className="App">
@@ -44,24 +23,21 @@ function AppContent() {
           path="/main/*"
           element={studentId ? <MainTabs studentId={studentId} onLogout={handleLogout} /> : <Navigate to="/login" />}
         />
+        <Route 
+          path="/coupon"
+          element={studentId ? <CouponPage studentId={studentId} /> : <Navigate to="/login" />}
+        />
 
         {/* 관리자용 라우트 */}
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route
-          path="/admin/dashboard"
-          element={
-            <AdminProtectedRoute>
-              <AdminDashboard />
-            </AdminProtectedRoute>
-          }
-        />
-
-        {/* 기본 경로 리디렉션 */}
-        <Route path="*" element={<Navigate to={studentId ? "/main" : "/login"} />} />
+        // ... (기존 코드)
       </Routes>
     </div>
   );
 }
+
+// ... (기존 코드)
+
 
 function App() {
   return (
