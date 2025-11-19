@@ -31,7 +31,11 @@ function StampManagementModal({ student, onClose, onStampChange }) {
   }, [student.studentId]);
 
   const handleStampDelete = async (clubId) => {
-    if (!window.confirm(`정말로 ${student.studentId} 학생의 스탬프를 삭제하시겠습니까?`)) {
+    // ... (기존 코드)
+  };
+
+  const handleCouponReset = async () => {
+    if (!window.confirm(`${student.studentId} 학생의 쿠폰 사용 상태를 초기화하시겠습니까?`)) {
       return;
     }
     try {
@@ -40,18 +44,16 @@ function StampManagementModal({ student, onClose, onStampChange }) {
         'Authorization': `Bearer ${adminPassword}`,
         'Content-Type': 'application/json'
       };
-      const body = JSON.stringify({
-        studentId: student.studentId,
-        clubId: clubId,
-        action: 'remove'
-      });
+      const body = JSON.stringify({ studentId: student.studentId });
 
-      const res = await fetch('/api/admin/manage-stamp', { method: 'POST', headers, body });
-      if (!res.ok) throw new Error('스탬프 삭제에 실패했습니다.');
+      const res = await fetch('/api/admin/reset-coupon', { method: 'POST', headers, body });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) throw new Error(data.message || '쿠폰 초기화에 실패했습니다.');
       
-      alert('스탬프가 삭제되었습니다.');
-      setStampedClubs(prev => prev.filter(id => id !== clubId)); // UI 즉시 업데이트
-      onStampChange(); // 부모 컴포넌트(학생 목록) 데이터 새로고침
+      alert(data.message);
+      onStampChange(); // 부모 컴포넌트 데이터 새로고침
+      onClose(); // 모달 닫기
     } catch (err) {
       alert(err.message);
     }
@@ -62,17 +64,24 @@ function StampManagementModal({ student, onClose, onStampChange }) {
       <div className="modal-content">
         <h2>{student.studentId} 스탬프 관리</h2>
         {loading ? <p>로딩 중...</p> : (
-          <ul className="stamp-list">
-            {stampedClubs.length > 0 ? stampedClubs.map(clubId => {
-              const club = allClubs.find(c => c.id === clubId);
-              return (
-                <li key={clubId}>
-                  <span>{club ? club.name : clubId} ({club ? club.location : '알 수 없음'})</span>
-                  <button onClick={() => handleStampDelete(clubId)} className="delete-button">삭제</button>
-                </li>
-              );
-            }) : <p>획득한 스탬프가 없습니다.</p>}
-          </ul>
+          <>
+            <ul className="stamp-list">
+              {stampedClubs.length > 0 ? stampedClubs.map(clubId => {
+                const club = allClubs.find(c => c.id === clubId);
+                return (
+                  <li key={clubId}>
+                    <span>{club ? club.name : clubId} ({club ? club.location : '알 수 없음'})</span>
+                    <button onClick={() => handleStampDelete(clubId)} className="delete-button">삭제</button>
+                  </li>
+                );
+              }) : <p>획득한 스탬프가 없습니다.</p>}
+            </ul>
+            {student.missionClear && (
+              <button onClick={handleCouponReset} className="reset-coupon-button">
+                쿠폰 사용 초기화
+              </button>
+            )}
+          </>
         )}
         <button onClick={onClose} className="close-button">닫기</button>
       </div>

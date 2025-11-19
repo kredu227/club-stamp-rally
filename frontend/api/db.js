@@ -185,49 +185,23 @@ async function getStudentStampStatus(studentId) {
 
 // 쿠폰 사용 처리 함수
 async function useCoupon(studentId) {
-  if (!process.env.KV_REST_API_URL) {
-    return { success: false, message: '쿠폰 사용은 Vercel KV가 연결된 배포 환경에서만 가능합니다.' };
-  }
-  const studentData = await getStudentData(studentId);
-  if (studentData.couponUsed) {
-    return { success: false, message: '이미 쿠폰을 사용했습니다.' };
-  }
-  studentData.couponUsed = true;
-  await setStudentData(studentId, studentData);
-  return { success: true, message: '쿠폰 사용이 완료되었습니다.' };
+// ... (기존 코드)
 }
 
-
-
+// 관리자용 쿠폰 초기화 함수
+async function resetCoupon(studentId) {
+  if (!process.env.KV_REST_API_URL) {
+    return { success: false, message: '쿠폰 초기화는 Vercel KV가 연결된 배포 환경에서만 가능합니다.' };
+  }
+  const studentData = await getStudentData(studentId);
+  studentData.couponUsed = false;
+  await setStudentData(studentId, studentData);
+  return { success: true, message: '쿠폰 사용 상태가 초기화되었습니다.' };
+}
 
 // 모든 학생의 스탬프 데이터를 가져오는 함수
-
 async function getAllStudentStamps() {
-  if (!process.env.KV_REST_API_URL) {
-    console.log('[LOG] Vercel KV environment variables not found. Returning empty array for getAllStudentStamps.');
-    return [];
-  }
-
-  const studentKeys = [];
-  // 새로운 키 패턴 'student_*'를 스캔합니다.
-  for await (const key of kv.scanIterator({ match: 'student_*' })) {
-    studentKeys.push(key);
-  }
-
-  if (studentKeys.length === 0) {
-    return [];
-  }
-
-  const allStudentData = await kv.mget(...studentKeys);
-  
-  return allStudentData.map((studentData, index) => {
-    // studentData가 null이거나 stamps 속성이 없는 경우를 대비하여 기본값을 설정합니다.
-    const stamps = (studentData && studentData.stamps) ? studentData.stamps : {};
-    return {
-      studentId: studentKeys[index].replace('student_', ''),
-      stamps: stamps
-    };
-  });
+// ... (기존 코드)
 }
 
 
@@ -290,11 +264,12 @@ module.exports = {
   getClubs,
   recordStampByQrCode,
   getStudentStampStatus,
-  useCoupon, // 쿠폰 사용 함수 추가
-  getAllStudentStamps, // for admin
-  getAdminStats,       // for admin
-  getAllStudentStatus, // for admin
-  manageStamp,         // for admin
+  useCoupon,
+  resetCoupon, // 쿠폰 초기화 함수 추가
+  getAllStudentStamps,
+  getAdminStats,
+  getAllStudentStatus,
+  manageStamp,
 };
 
   
