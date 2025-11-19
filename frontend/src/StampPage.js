@@ -214,12 +214,14 @@ function StampPage({ studentId }) {
           </div>
         )}
 
-        <button onClick={() => setIsScannerOpen(true)} className="qr-scan-button">
-          QR 스캔하기
-        </button>
-        <button onClick={() => setIsManualInputOpen(true)} className="manual-entry-button">
-          QR 스캔에 오류가 있나요?
-        </button>
+        <div className="stamp-actions">
+          <button onClick={() => setIsScannerOpen(true)} className="qr-scan-button">
+            QR 스캔하기
+          </button>
+          <button onClick={() => setIsManualInputOpen(true)} className="manual-entry-button">
+            QR 스캔에 오류가 있나요?
+          </button>
+        </div>
       </div>
 
       <div className="club-list-section-v2">

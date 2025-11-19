@@ -1,13 +1,126 @@
-/* StampPage.css */
+.stamp-page-container-v2 {
+  padding: 15px;
+  padding-bottom: 80px; /* 하단 탭과의 간격 확보 */
+}
 
-/* ... (기존 CSS 코드) ... */
+.mission-status-v2 {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.mission-status-v2 h3 {
+  margin-top: 0;
+  text-align: center;
+  font-size: 1.4em;
+  color: #333;
+}
+
+.location-status {
+  margin: 15px 0;
+}
+
+.progress-bar-container {
+  background-color: #e9ecef;
+  border-radius: 8px;
+  height: 16px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.5s ease-in-out;
+}
+
+.progress-bar.본관 { background-color: #007bff; }
+.progress-bar.후관 { background-color: #fd7e14; }
+
+.stamp-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.qr-scan-button {
+  width: 100%;
+  padding: 14px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.manual-entry-button {
+  width: 100%;
+  padding: 8px;
+  font-size: 0.9em;
+  color: #6c757d;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.club-list-section-v2 {
+  margin-top: 20px;
+}
+
+.club-group-v2 h3 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid #eee;
+}
+
+.club-grid-v2 {
+  display: grid;
+  gap: 10px;
+}
+
+.club-grid-v2.main-building {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.club-grid-v2.annex-building {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.club-item-v2 {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  font-size: 0.85em;
+  word-break: keep-all;
+  transition: all 0.3s ease;
+}
+
+.club-item-v2.stamped-v2 {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border-color: #0056b3;
+}
+
+.club-item-v2.empty-v2 {
+  background-color: transparent;
+  border: 1px dashed #ced4da;
+}
 
 .coupon-section {
   margin-top: 15px;
   padding: 10px;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   text-align: center;
 }
 
@@ -17,24 +130,16 @@
   font-size: 1.1em;
   font-weight: bold;
   color: white;
-  background-color: #28a745; /* 성공적인 느낌의 초록색 */
+  background-color: #28a745;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.coupon-button-v2:hover {
-  background-color: #218838;
-}
-
 .coupon-button-v2:disabled {
-  background-color: #6c757d; /* 회색 */
+  background-color: #6c757d;
   cursor: not-allowed;
-}
-
-.coupon-section.used {
-  background-color: #f8f9fa;
 }
 
 .post-coupon-message {
