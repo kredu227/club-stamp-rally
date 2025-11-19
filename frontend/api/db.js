@@ -201,7 +201,54 @@ async function resetCoupon(studentId) {
 
 // 모든 학생의 스탬프 데이터를 가져오는 함수
 async function getAllStudentStamps() {
-// ... (기존 코드)
+  if (!process.env.KV_REST_API_URL) {
+    console.log('[LOG] Vercel KV environment variables not found. Returning empty array for getAllStudentStamps.');
+    return [];
+  }
+
+  const allStudentDataMap = new Map();
+
+  // 1. 새로운 'student_*' 키를 모두 스캔하여 Map에 저장
+  const studentKeys = [];
+  for await (const key of kv.scanIterator({ match: 'student_*' })) {
+    studentKeys.push(key);
+  }
+  if (studentKeys.length > 0) {
+    const newFormatData = await kv.mget(...studentKeys);
+    newFormatData.forEach((data, index) => {
+      const studentId = studentKeys[index].replace('student_', '');
+      if (data && data.stamps) {
+        allStudentDataMap.set(studentId, data.stamps);
+      }
+    });
+  }
+
+  // 2. 이전 'stamps_*' 키를 모두 스캔
+  const stampKeys = [];
+  for await (const key of kv.scanIterator({ match: 'stamps_*' })) {
+    stampKeys.push(key);
+  }
+  if (stampKeys.length > 0) {
+    const oldFormatData = await kv.mget(...stampKeys);
+    oldFormatData.forEach((stamps, index) => {
+      const studentId = stampKeys[index].replace('stamps_', '');
+      // Map에 아직 해당 학생 데이터가 없을 경우 (마이그레이션 대상) 추가
+      if (!allStudentDataMap.has(studentId) && stamps) {
+        allStudentDataMap.set(studentId, stamps);
+      }
+    });
+  }
+
+  // 3. Map을 최종 배열 형태로 변환
+  const finalStudentStamps = [];
+  for (const [studentId, stamps] of allStudentDataMap.entries()) {
+    finalStudentStamps.push({
+      studentId,
+      stamps: stamps || {}
+    });
+  }
+
+  return finalStudentStamps;
 }
 
 
