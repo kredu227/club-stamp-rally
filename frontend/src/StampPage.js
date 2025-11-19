@@ -129,21 +129,71 @@ function StampPage({ studentId }) {
     stampedClubs = []
   } = stampStatus;
 
-  const 본관_clubs = clubs.filter(club => club.location === '본관');
-  // ... (기존 코드)
+  const 후관_clubs_raw = clubs.filter(club => club.location === '후관');
+
+  const 후관_grid_items = [];
+  if (후관_clubs_raw.length > 0) {
+    for (let i = 0; i < 9; i++) {
+      후관_grid_items.push(후관_clubs_raw[i] || { id: `placeholder-${i}`, empty: true });
+    }
+    후관_grid_items.push({ id: 'empty-left', empty: true });
+    후관_grid_items.push(후관_clubs_raw[9] || { id: 'placeholder-9', empty: true });
+    후관_grid_items.push({ id: 'empty-right', empty: true });
+  }
 
   return (
-    // ... (기존 코드)
+    <div className="stamp-page-container-v2">
+      {isScannerOpen && (
+        <div className="qr-scanner-modal">
+          <div className="qr-scanner-modal-content">
+            <QrScanner
+              onScanSuccess={handleScanSuccess}
+              onScanFailure={handleScanFailure}
+            />
+            <button onClick={() => setIsScannerOpen(false)} className="qr-scanner-close-button">
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
+
+      {isManualInputOpen && (
+        <div className="qr-scanner-modal">
+          <div className="manual-input-modal-content">
+            <h3>QR 코드 직접 입력</h3>
+            <form onSubmit={handleManualSubmit}>
+              <input
+                type="text"
+                value={manualQrCode}
+                onChange={(e) => setManualQrCode(e.target.value)}
+                placeholder="QR 코드를 입력하세요"
+                className="manual-input-field"
+              />
+              <div className="manual-input-buttons">
+                <button type="submit" className="manual-submit-button">제출</button>
+                <button type="button" onClick={() => setIsManualInputOpen(false)} className="manual-close-button">취소</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div className="mission-status-v2">
         <h3>미션 진행 상황</h3>
         <p>총 스탬프: {totalStamps}개</p>
         <div className="location-status">
-          {/* ... (기존 코드) ... */}
+          <p>[본관] {본관_stamps} / 5개 (필수)</p>
+          <div className="progress-bar-container">
+            <div className="progress-bar 본관" style={{ width: `${Math.min((본관_stamps / 5) * 100, 100)}%` }}></div>
+          </div>
         </div>
         <div className="location-status">
-          {/* ... (기존 코드) ... */}
+          <p>[후관] {후관_stamps} / 3개 (필수)</p>
+          <div className="progress-bar-container">
+            <div className="progress-bar 후관" style={{ width: `${Math.min((후관_stamps / 3) * 100, 100)}%` }}></div>
+          </div>
         </div>
-
+        
         {/* --- 쿠폰 섹션 --- */}
         {overall_mission_clear && !couponUsed && (
           <div className="coupon-section">
@@ -162,13 +212,40 @@ function StampPage({ studentId }) {
             </p>
           </div>
         )}
-        {/* --- QR 스캔 버튼 --- */}
+
         <button onClick={() => setIsScannerOpen(true)} className="qr-scan-button">
           QR 스캔하기
         </button>
-        {/* ... (기존 코드) */}
+        <button onClick={() => setIsManualInputOpen(true)} className="manual-entry-button">
+          QR 스캔에 오류가 있나요?
+        </button>
       </div>
-    // ... (기존 코드)
+
+      <div className="club-list-section-v2">
+        <div className="club-group-v2">
+          <h3>🏢 본관</h3>
+          <div className="club-grid-v2 main-building">
+            {본관_clubs.map(club => (
+              <div key={club.id} className={`club-item-v2 ${stampedClubs.includes(club.id) ? 'stamped-v2' : ''}`}>
+                {club.name}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="club-group-v2">
+          <h3>🏫 후관</h3>
+          <div className="club-grid-v2 annex-building">
+            {후관_grid_items.map(item => (
+              item.empty ?
+              <div key={item.id} className="club-item-v2 empty-v2"></div> :
+              <div key={item.id} className={`club-item-v2 ${stampedClubs.includes(item.id) ? 'stamped-v2' : ''}`}>
+                {item.name}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
