@@ -29,7 +29,7 @@ function MainTabs({ studentId, onLogout }) {
   return (
     <div className="main-tabs-container">
       <div className="main-header">
-        <span>{studentId}님, 환영합니다!</span>
+        <span>{studentId}님, 미션을 달성하고 학술제를 즐겨 보세요!</span>
         <button onClick={onLogout} className="logout-button">로그아웃</button>
       </div>
       <div className="tab-content">
