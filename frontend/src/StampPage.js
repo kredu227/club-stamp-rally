@@ -30,7 +30,7 @@ function StampPage({ studentId }) {
       setClubs(clubsData);
     } catch (err) {
       console.error('데이터 로딩 중 오류:', err);
-      setError('데이터 로딩 중 오류가 발생했습니다.');
+      setError('서버와 연결이 불안정합니다. 잠시 후 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }
@@ -70,7 +70,7 @@ function StampPage({ studentId }) {
       
     } catch (error) {
       // 네트워크 오류 등 실패 시 사용자에게 알림
-      alert('스탬프 처리 중 오류가 발생했습니다.');
+      alert('스탬프 처리 중 오류가 발생했습니다. 네트워크 상태를 확인해주세요.');
     }
   };
 
@@ -100,7 +100,7 @@ function StampPage({ studentId }) {
       }
 
     } catch (error) {
-      alert('스탬프 처리 중 오류가 발생했습니다.');
+      alert('스탬프 처리 중 오류가 발생했습니다. 네트워크 상태를 확인해주세요.');
     }
     setManualQrCode(''); // 입력 필드 초기화
   };
@@ -114,7 +114,26 @@ function StampPage({ studentId }) {
     return <div className="loading-container">로딩 중...</div>;
   }
   if (error) {
-    return <div className="error-container">{error}</div>;
+    return (
+      <div className="error-container" style={{ textAlign: 'center', padding: '20px' }}>
+        <p className="error-message" style={{ color: 'red', marginBottom: '15px' }}>{error}</p>
+        <button 
+          onClick={fetchData} 
+          className="retry-button"
+          style={{
+            padding: '10px 20px',
+            fontSize: '16px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer'
+          }}
+        >
+          다시 시도하기
+        </button>
+      </div>
+    );
   }
   if (!stampStatus) {
     return <div className="loading-container">스탬프 정보를 표시할 수 없습니다.</div>;

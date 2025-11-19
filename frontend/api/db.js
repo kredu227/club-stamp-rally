@@ -117,9 +117,17 @@ async function recordStampByQrCode(studentId, qrCode) {
 
 // Vercel KV를 사용하도록 수정 (async 함수)
 async function getStudentStampStatus(studentId) {
-  // Vercel 환경 변수가 설정되어 있지 않으면 로컬 파일 시스템을 fallback으로 사용
+  // Vercel 환경 변수가 설정되어 있지 않은 경우 처리
   if (!process.env.KV_REST_API_URL) {
-    console.log('[LOG] Vercel KV environment variables not found. Falling back to local JSON file.');
+    // 배포 환경(Vercel)인데 KV URL이 없다면 명백한 서버 설정 오류이므로 에러를 발생시킵니다.
+    // 이렇게 해야 프론트엔드에서 '스탬프 0개'로 보이는 대신 '서버 오류' 화면을 띄울 수 있습니다.
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+      console.error('[CRITICAL] Vercel KV environment variables missing in production!');
+      throw new Error('Server configuration error: Database connection missing.');
+    }
+
+    // 로컬 개발 환경에서만 편의를 위해 로컬 JSON 파일을 사용합니다.
+    console.log('[LOG] Vercel KV environment variables not found. Falling back to local JSON file (Development only).');
     try {
       // 로컬 JSON 파일에서 학생 데이터를 찾습니다.
       const student = students.find(s => s.studentId === studentId);
@@ -153,39 +161,75 @@ async function getStudentStampStatus(studentId) {
     }
   }
 
-  // Vercel KV 로직
-  const studentData = await getStudentData(studentId);
-  const stamps = studentData.stamps;
-  const couponUsed = studentData.couponUsed;
+  // Vercel KV 로직 (환경 변수가 있을 때)
+  try {
+    const studentData = await getStudentData(studentId);
+    const stamps = studentData.stamps;
+    const couponUsed = studentData.couponUsed;
 
-  const stampedClubIds = Object.keys(stamps).filter(clubId => stamps[clubId]);
+    const stampedClubIds = Object.keys(stamps).filter(clubId => stamps[clubId]);
 
-  const 본관_clubs = clubs.filter(club => club.location === '본관');
-  const 후관_clubs = clubs.filter(club => club.location === '후관');
+    const 본관_clubs = clubs.filter(club => club.location === '본관');
+    const 후관_clubs = clubs.filter(club => club.location === '후관');
 
-  const 본관_stamps = 본관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
-  const 후관_stamps = 후관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
+    const 본관_stamps = 본관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
+    const 후관_stamps = 후관_clubs.filter(club => stampedClubIds.includes(club.id)).length;
 
-  const 본관_mission_clear = 본관_stamps >= 5;
-  const 후관_mission_clear = 후관_stamps >= 3;
-  const overall_mission_clear = 본관_mission_clear && 후관_mission_clear;
+    const 본관_mission_clear = 본관_stamps >= 5;
+    const 후관_mission_clear = 후관_stamps >= 3;
+    const overall_mission_clear = 본관_mission_clear && 후관_mission_clear;
 
-  return {
-    totalStamps: stampedClubIds.length,
-    본관_stamps,
-    후관_stamps,
-    본관_mission_clear,
-    후관_mission_clear,
-    overall_mission_clear,
-    stampedClubs: stampedClubIds,
-    couponUsed, // 쿠폰 사용 여부 추가
-    allClubs: clubs.map(club => ({ id: club.id, name: club.name, location: club.location, stamped: stampedClubIds.includes(club.id) }))
-  };
+    return {
+      totalStamps: stampedClubIds.length,
+      본관_stamps,
+      후관_stamps,
+      본관_mission_clear,
+      후관_mission_clear,
+      overall_mission_clear,
+      stampedClubs: stampedClubIds,
+      couponUsed,
+      allClubs: clubs.map(club => ({ id: club.id, name: club.name, location: club.location, stamped: stampedClubIds.includes(club.id) }))
+    };
+  } catch (error) {
+    console.error(`[CRITICAL] Error fetching data from Vercel KV for student ${studentId}:`, error);
+    // KV 연결 실패 시 에러를 전파하여 '스탬프 0개'로 표시되는 것을 방지
+    throw new Error('Database connection failed'); 
+  }
 }
 
 // 쿠폰 사용 처리 함수
 async function useCoupon(studentId) {
-// ... (기존 코드)
+  // 1. 환경 변수 체크 (배포 환경)
+  if (process.env.KV_REST_API_URL) {
+    try {
+      // 최신 상태를 가져와서 미션 클리어 여부 확인
+      const currentStatus = await getStudentStampStatus(studentId);
+
+      if (!currentStatus.overall_mission_clear) {
+        return { success: false, message: '미션을 아직 완료하지 않았습니다.' };
+      }
+
+      if (currentStatus.couponUsed) {
+        return { success: false, message: '이미 쿠폰을 사용했습니다.' };
+      }
+
+      // 학생 데이터를 가져와서 쿠폰 사용 플래그 설정
+      const studentData = await getStudentData(studentId);
+      studentData.couponUsed = true;
+      
+      await setStudentData(studentId, studentData);
+
+      return { success: true, message: '쿠폰 사용이 완료되었습니다.' };
+    } catch (error) {
+      console.error(`Error using coupon for student ${studentId}:`, error);
+      throw new Error('Failed to use coupon.');
+    }
+  }
+
+  // 2. 로컬 환경 (환경 변수 없음) - 폴백
+  // 로컬 개발 시 에러가 나지 않도록 처리
+  console.log('[LOG] Vercel KV environment variables not found. useCoupon is disabled in local mode.');
+  return { success: false, message: '로컬 환경에서는 쿠폰 사용 상태를 저장할 수 없습니다.' };
 }
 
 // 관리자용 쿠폰 초기화 함수
