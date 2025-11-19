@@ -31,7 +31,32 @@ function StampManagementModal({ student, onClose, onStampChange }) {
   }, [student.studentId]);
 
   const handleStampDelete = async (clubId) => {
-    // ... (기존 코드)
+    if (!window.confirm(`정말로 ${student.studentId} 학생의 스탬프를 삭제하시겠습니까?`)) {
+      return;
+    }
+    try {
+      const adminPassword = sessionStorage.getItem('adminAuth');
+      const headers = { 
+        'Authorization': `Bearer ${adminPassword}`,
+        'Content-Type': 'application/json'
+      };
+      const body = JSON.stringify({
+        studentId: student.studentId,
+        clubId: clubId,
+        action: 'remove'
+      });
+
+      const res = await fetch('/api/admin/manage-stamp', { method: 'POST', headers, body });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) throw new Error('스탬프 삭제에 실패했습니다.');
+      
+      alert('스탬프가 삭제되었습니다.');
+      setStampedClubs(data.updatedStampedClubs); // 서버로부터 받은 최신 배열로 UI 업데이트
+      onStampChange(); // 부모 컴포넌트(학생 목록) 데이터 새로고침
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   const handleCouponReset = async () => {
@@ -203,6 +228,9 @@ function StudentStatus() {
               <th onClick={() => requestSort('missionClear')} className="sortable-header">
                 미션 완료 여부 {sortConfig.key === 'missionClear' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : ''}
               </th>
+              <th onClick={() => requestSort('couponUsed')} className="sortable-header">
+                쿠폰 사용 여부 {sortConfig.key === 'couponUsed' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : ''}
+              </th>
               <th>관리</th>
             </tr>
           </thead>
@@ -212,6 +240,7 @@ function StudentStatus() {
                 <td>{student.studentId}</td>
                 <td>{student.totalStamps}</td>
                 <td>{student.missionClear ? '✅ 완료' : '미완료'}</td>
+                <td>{student.couponUsed ? '✅ 사용' : '❌ 미사용'}</td>
                 <td>
                   <button onClick={() => setSelectedStudent(student)} className="manage-button">
                     관리

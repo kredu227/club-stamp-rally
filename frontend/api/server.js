@@ -133,7 +133,21 @@ adminRouter.get('/all-student-stamps', async (req, res) => {
 
 // 스탬프 수동 관리 API
 adminRouter.post('/manage-stamp', async (req, res) => {
-// ... (기존 코드)
+  const { studentId, clubId, action } = req.body;
+  if (!studentId || !clubId || !action) {
+    return res.status(400).json({ success: false, message: 'Student ID, Club ID, and action are required.' });
+  }
+  try {
+    const result = await db.manageStamp(studentId, clubId, action);
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(400).json({ success: false, message: result.message });
+    }
+  } catch (error) {
+    console.error('Error managing stamp:', error);
+    res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+  }
 });
 
 // 쿠폰 사용 초기화 API

@@ -287,17 +287,43 @@ async function getAllStudentStatus() {
     return [];
   }
 
-  const allStudentData = await getAllStudentStamps();
-  const allStatus = allStudentData.map(student => {
-    const stampedClubIds = Object.keys(student.stamps);
+  const studentKeys = [];
+  for await (const key of kv.scanIterator({ match: 'student_*' })) {
+    studentKeys.push(key);
+  }
+
+  // 마이그레이션되지 않은 옛날 데이터도 함께 조회
+  const stampKeys = [];
+  for await (const key of kv.scanIterator({ match: 'stamps_*' })) {
+      const studentId = key.replace('stamps_', '');
+      if (!studentKeys.includes(`student_${studentId}`)) {
+          stampKeys.push(key);
+      }
+  }
+
+  const allKeys = [...studentKeys, ...stampKeys];
+  if (allKeys.length === 0) return [];
+
+  const allData = await kv.mget(...allKeys);
+
+  const allStatus = allData.map((data, index) => {
+    const key = allKeys[index];
+    const isNewFormat = key.startsWith('student_');
+    const studentId = isNewFormat ? key.replace('student_', '') : key.replace('stamps_', '');
+    
+    const stamps = isNewFormat ? (data.stamps || {}) : (data || {});
+    const couponUsed = isNewFormat ? (data.couponUsed || false) : false;
+
+    const stampedClubIds = Object.keys(stamps);
     const 본관_stamps = clubs.filter(c => c.location === '본관' && stampedClubIds.includes(c.id)).length;
     const 후관_stamps = clubs.filter(c => c.location === '후관' && stampedClubIds.includes(c.id)).length;
     const mission_clear = 본관_stamps >= 5 && 후관_stamps >= 3;
 
     return {
-      studentId: student.studentId,
+      studentId,
       totalStamps: stampedClubIds.length,
       missionClear: mission_clear,
+      couponUsed: couponUsed, // 쿠폰 사용 여부 추가
     };
   });
 
@@ -323,24 +349,26 @@ module.exports = {
 
   async function manageStamp(studentId, clubId, action) {
   if (!process.env.KV_REST_API_URL) {
-    console.log('[LOG] Vercel KV environment variables not found. Stamp management is disabled.');
     return { success: false, message: '스탬프 관리는 Vercel KV가 연결된 배포 환경에서만 가능합니다.' };
   }
 
   const studentData = await getStudentData(studentId);
-  const currentStamps = studentData.stamps;
+  let newStamps;
 
   if (action === 'add') {
-    currentStamps[clubId] = true;
+    newStamps = { ...studentData.stamps, [clubId]: true };
   } else if (action === 'remove') {
-    delete currentStamps[clubId];
+    const { [clubId]: _, ...rest } = studentData.stamps;
+    newStamps = rest;
   } else {
     return { success: false, message: 'Invalid action' };
   }
 
-  studentData.stamps = currentStamps;
-  await setStudentData(studentId, studentData);
-  return { success: true, updatedStamps: currentStamps };
+  const newStudentData = { ...studentData, stamps: newStamps };
+  await setStudentData(studentId, newStudentData);
+  
+  const updatedStampedClubs = Object.keys(newStamps);
+  return { success: true, updatedStampedClubs };
 }
 
   
