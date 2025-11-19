@@ -7,8 +7,6 @@ import AdminLogin from './admin/AdminLogin'; // 추가
 import AdminDashboard from './admin/AdminDashboard'; // 추가
 import './App.css';
 
-import CouponPage from './CouponPage'; // CouponPage 컴포넌트 import
-
 // ... (기존 코드)
 
 function AppContent() {
