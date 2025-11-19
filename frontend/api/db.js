@@ -48,7 +48,23 @@ function getClubs() {
 async function getStudentData(studentId) {
   if (!process.env.KV_REST_API_URL) return null;
   const studentKey = `student_${studentId}`;
-  return await kv.get(studentKey) || { stamps: {}, couponUsed: false };
+  let studentData = await kv.get(studentKey);
+
+  // 새로운 형식의 데이터가 없으면, 이전 형식(stamps_...)의 데이터가 있는지 확인
+  if (!studentData) {
+    const oldStampKey = `stamps_${studentId}`;
+    const oldStamps = await kv.get(oldStampKey);
+
+    // 이전 형식의 데이터가 존재하면, 새로운 형식으로 변환하여 저장 (마이그레이션)
+    if (oldStamps) {
+      console.log(`[LOG] Migrating data for student ${studentId} from old format.`);
+      studentData = { stamps: oldStamps, couponUsed: false };
+      await kv.set(studentKey, studentData);
+      // 선택: 이전 키를 삭제할 수도 있습니다. await kv.del(oldStampKey);
+    }
+  }
+  
+  return studentData || { stamps: {}, couponUsed: false };
 }
 
 // Vercel KV에 학생 데이터를 저장하는 도우미 함수
@@ -192,20 +208,26 @@ async function getAllStudentStamps() {
     return [];
   }
 
-  const studentStampKeys = [];
-  for await (const key of kv.scanIterator({ match: 'stamps_*' })) {
-    studentStampKeys.push(key);
+  const studentKeys = [];
+  // 새로운 키 패턴 'student_*'를 스캔합니다.
+  for await (const key of kv.scanIterator({ match: 'student_*' })) {
+    studentKeys.push(key);
   }
 
-  if (studentStampKeys.length === 0) {
+  if (studentKeys.length === 0) {
     return [];
   }
 
-  const allStampsData = await kv.mget(...studentStampKeys);
-  return allStampsData.map((stamps, index) => ({
-    studentId: studentStampKeys[index].replace('stamps_', ''),
-    stamps: stamps || {}
-  }));
+  const allStudentData = await kv.mget(...studentKeys);
+  
+  return allStudentData.map((studentData, index) => {
+    // studentData가 null이거나 stamps 속성이 없는 경우를 대비하여 기본값을 설정합니다.
+    const stamps = (studentData && studentData.stamps) ? studentData.stamps : {};
+    return {
+      studentId: studentKeys[index].replace('student_', ''),
+      stamps: stamps
+    };
+  });
 }
 
 
@@ -283,8 +305,8 @@ module.exports = {
     return { success: false, message: '스탬프 관리는 Vercel KV가 연결된 배포 환경에서만 가능합니다.' };
   }
 
-  const studentStampKey = `stamps_${studentId}`;
-  const currentStamps = await kv.get(studentStampKey) || {};
+  const studentData = await getStudentData(studentId);
+  const currentStamps = studentData.stamps;
 
   if (action === 'add') {
     currentStamps[clubId] = true;
@@ -294,7 +316,8 @@ module.exports = {
     return { success: false, message: 'Invalid action' };
   }
 
-  await kv.set(studentStampKey, currentStamps);
+  studentData.stamps = currentStamps;
+  await setStudentData(studentId, studentData);
   return { success: true, updatedStamps: currentStamps };
 }
 
