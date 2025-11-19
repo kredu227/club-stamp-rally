@@ -129,6 +129,7 @@ function StampPage({ studentId }) {
     stampedClubs = []
   } = stampStatus;
 
+  const 본관_clubs = clubs.filter(club => club.location === '본관');
   const 후관_clubs_raw = clubs.filter(club => club.location === '후관');
 
   const 후관_grid_items = [];
