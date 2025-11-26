@@ -8,9 +8,9 @@ const schoolLayout = {
     {
       floor: "3층",
       sections: [
-        { type: "rooms", ratio: 2, rooms: [{ name: "컴퓨터실", type: "special" }, { name: "서버실", type: "facility" }] },
+        { type: "rooms", ratio: 2, rooms: [{ name: "서버실", type: "facility" }, { name: "컴퓨터실", type: "special" }] },
         { type: "stairs" },
-        { type: "rooms", ratio: 3, rooms: [{ name: "도서관활용실", type: "special" }, { name: "도서실", type: "special" }] }
+        { type: "rooms", ratio: 3, rooms: [{ name: "도서실", type: "special" }, { name: "도서관활용실", type: "special" }] }
       ]
     },
     {

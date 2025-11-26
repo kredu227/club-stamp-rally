@@ -154,7 +154,7 @@
   font-size: 0.7rem;
   color: #777;
   margin-bottom: 2px;
-  font-weight: normal;
+  font-weight: 300; /* 얇게 변경 */
   line-height: 1.1;
   width: 100%;
   overflow: hidden;
@@ -164,7 +164,7 @@
 
 .has-club .room-name {
   color: #555;
-  font-weight: bold;
+  font-weight: 500; /* 약간 굵게 유지 */
 }
 
 /* 동아리명 */
