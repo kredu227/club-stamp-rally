@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import StampPage from './StampPage';
 import BoothLayout from './BoothLayout';
 import ClubActivities from './ClubActivities';
-import './MainTabs.css'; // 탭 바 스타일을 위한 CSS 파일
+import './MainTabs.css';
 
 function MainTabs({ studentId, onLogout }) {
   const [activeTab, setActiveTab] = useState('stamp');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // URL 경로에 따라 활성 탭 동기화
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.includes('/layout')) {
+      setActiveTab('layout');
+    } else if (path.includes('/activities')) {
+      setActiveTab('activities');
+    } else {
+      // 기본값 또는 /main
+      setActiveTab('stamp');
+    }
+  }, [location]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -24,6 +38,12 @@ function MainTabs({ studentId, onLogout }) {
 
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
+    // 탭 클릭 시 URL도 변경
+    if (tabName === 'stamp') {
+      navigate('/main');
+    } else {
+      navigate(`/main/${tabName}`);
+    }
   };
 
   return (
