@@ -14,7 +14,6 @@ function StampPage({ studentId }) {
   const [manualQrCode, setManualQrCode] = useState('');
 
   const fetchData = useCallback(async () => {
-    // 데이터 로딩 시 항상 로딩 상태로 설정
     setIsLoading(true);
     try {
       const [statusResponse, clubsResponse] = await Promise.all([
@@ -42,7 +41,6 @@ function StampPage({ studentId }) {
 
   const handleScanSuccess = async (decodedText) => {
     setIsScannerOpen(false);
-
     try {
       const response = await fetch('/api/stamp', {
         method: 'POST',
@@ -51,25 +49,16 @@ function StampPage({ studentId }) {
       });
       
       const data = await response.json();
-
       if (data.success) {
-        // 서버 응답 메시지를 먼저 보여줍니다.
         alert(data.message || '스탬프를 획득했습니다!');
-        
-        // 만약 방금 미션을 클리어했다면, 클리어 축하 메시지를 추가로 보여줍니다.
         if (data.justClearedMission) {
           alert("Mission Clear! 소떡소떡 교환권을 획득했습니다.");
         }
-        
-        // 데이터를 다시 불러와 화면을 업데이트합니다.
         fetchData();
       } else {
-        // 서버에서 실패 메시지를 보냈을 경우
         alert(data.message || '스탬프 처리에 실패했습니다.');
       }
-      
     } catch (error) {
-      // 네트워크 오류 등 실패 시 사용자에게 알림
       alert('스탬프 처리 중 오류가 발생했습니다. 네트워크 상태를 확인해주세요.');
     }
   };
@@ -88,7 +77,6 @@ function StampPage({ studentId }) {
         body: JSON.stringify({ studentId, qrCode: manualQrCode.trim() }),
       });
       const data = await response.json();
-      
       if (data.success) {
         alert(data.message || '스탬프가 처리되었습니다.');
         if (data.justClearedMission) {
@@ -98,53 +86,43 @@ function StampPage({ studentId }) {
       } else {
         alert(data.message || '스탬프 처리에 실패했습니다.');
       }
-
     } catch (error) {
       alert('스탬프 처리 중 오류가 발생했습니다. 네트워크 상태를 확인해주세요.');
     }
-    setManualQrCode(''); // 입력 필드 초기화
+    setManualQrCode('');
   };
 
   const handleScanFailure = (error) => {
-    // 스캔 실패는 사용자에게 계속 시도할 기회를 주기 위해 조용히 처리
     console.log("QR Scan Failed:", error);
   };
 
-  if (isLoading) {
-    return <div className="loading-container">로딩 중...</div>;
-  }
+  // 동아리 클릭 핸들러: 스탬프를 획득하지 않은 경우에만 상세 페이지로 이동
+  const handleClubClick = (club, isStamped) => {
+    if (!isStamped) {
+      // 활동 내용 탭(index 2)으로 이동하고 동아리 이름 전달
+      navigate('/main/activities', { state: { targetClubName: club.name } });
+    }
+  };
+
+  if (isLoading) return <div className="loading-container">로딩 중...</div>;
   if (error) {
     return (
       <div className="error-container" style={{ textAlign: 'center', padding: '20px' }}>
         <p className="error-message" style={{ color: 'red', marginBottom: '15px' }}>{error}</p>
-        <button 
-          onClick={fetchData} 
-          className="retry-button"
-          style={{
-            padding: '10px 20px',
-            fontSize: '16px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
+        <button onClick={fetchData} className="retry-button" style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px' }}>
           다시 시도하기
         </button>
       </div>
     );
   }
-  if (!stampStatus) {
-    return <div className="loading-container">스탬프 정보를 표시할 수 없습니다.</div>;
-  }
+  if (!stampStatus) return <div className="loading-container">스탬프 정보를 표시할 수 없습니다.</div>;
 
   const {
     totalStamps = 0,
     본관_stamps = 0,
     후관_stamps = 0,
     overall_mission_clear = false,
-    couponUsed = false, // 쿠폰 사용 여부
+    couponUsed = false,
     stampedClubs = []
   } = stampStatus;
 
@@ -166,13 +144,8 @@ function StampPage({ studentId }) {
       {isScannerOpen && (
         <div className="qr-scanner-modal">
           <div className="qr-scanner-modal-content">
-            <QrScanner
-              onScanSuccess={handleScanSuccess}
-              onScanFailure={handleScanFailure}
-            />
-            <button onClick={() => setIsScannerOpen(false)} className="qr-scanner-close-button">
-              닫기
-            </button>
+            <QrScanner onScanSuccess={handleScanSuccess} onScanFailure={handleScanFailure} />
+            <button onClick={() => setIsScannerOpen(false)} className="qr-scanner-close-button">닫기</button>
           </div>
         </div>
       )}
@@ -182,13 +155,7 @@ function StampPage({ studentId }) {
           <div className="manual-input-modal-content">
             <h3>QR 코드 직접 입력</h3>
             <form onSubmit={handleManualSubmit}>
-              <input
-                type="text"
-                value={manualQrCode}
-                onChange={(e) => setManualQrCode(e.target.value)}
-                placeholder="QR 코드를 입력하세요"
-                className="manual-input-field"
-              />
+              <input type="text" value={manualQrCode} onChange={(e) => setManualQrCode(e.target.value)} placeholder="QR 코드를 입력하세요" className="manual-input-field" />
               <div className="manual-input-buttons">
                 <button type="submit" className="manual-submit-button">제출</button>
                 <button type="button" onClick={() => setIsManualInputOpen(false)} className="manual-close-button">취소</button>
@@ -214,32 +181,21 @@ function StampPage({ studentId }) {
           </div>
         </div>
         
-        {/* --- 쿠폰 섹션 --- */}
         {overall_mission_clear && !couponUsed && (
           <div className="coupon-section">
-            <button onClick={() => navigate('/coupon')} className="coupon-button-v2">
-              소떡소떡 교환권 사용하기
-            </button>
+            <button onClick={() => navigate('/coupon')} className="coupon-button-v2">소떡소떡 교환권 사용하기</button>
           </div>
         )}
         {overall_mission_clear && couponUsed && (
           <div className="coupon-section used">
-            <button className="coupon-button-v2" disabled>
-              소떡소떡 교환권 사용완료
-            </button>
-            <p className="post-coupon-message">
-              학술제 투어를 계속해서 스탬프 개수 1등을 달성해 보세요!
-            </p>
+            <button className="coupon-button-v2" disabled>소떡소떡 교환권 사용완료</button>
+            <p className="post-coupon-message">학술제 투어를 계속해서 스탬프 개수 1등을 달성해 보세요!</p>
           </div>
         )}
 
         <div className="stamp-actions">
-          <button onClick={() => setIsScannerOpen(true)} className="qr-scan-button">
-            QR 스캔하기
-          </button>
-          <button onClick={() => setIsManualInputOpen(true)} className="manual-entry-button">
-            QR 스캔에 오류가 있나요?
-          </button>
+          <button onClick={() => setIsScannerOpen(true)} className="qr-scan-button">QR 스캔하기</button>
+          <button onClick={() => setIsManualInputOpen(true)} className="manual-entry-button">QR 스캔에 오류가 있나요?</button>
         </div>
       </div>
 
@@ -247,23 +203,38 @@ function StampPage({ studentId }) {
         <div className="club-group-v2">
           <h3>🏢 본관</h3>
           <div className="club-grid-v2 main-building">
-            {본관_clubs.map(club => (
-              <div key={club.id} className={`club-item-v2 ${stampedClubs.includes(club.id) ? 'stamped-v2' : ''}`}>
-                {club.name}
-              </div>
-            ))}
+            {본관_clubs.map(club => {
+              const isStamped = stampedClubs.includes(club.id);
+              return (
+                <div 
+                  key={club.id} 
+                  className={`club-item-v2 ${isStamped ? 'stamped-v2' : 'clickable'}`}
+                  onClick={() => handleClubClick(club, isStamped)}
+                  style={{ cursor: isStamped ? 'default' : 'pointer' }}
+                >
+                  {club.name}
+                </div>
+              );
+            })}
           </div>
         </div>
         <div className="club-group-v2">
           <h3>🏫 후관</h3>
           <div className="club-grid-v2 annex-building">
-            {후관_grid_items.map(item => (
-              item.empty ?
-              <div key={item.id} className="club-item-v2 empty-v2"></div> :
-              <div key={item.id} className={`club-item-v2 ${stampedClubs.includes(item.id) ? 'stamped-v2' : ''}`}>
-                {item.name}
-              </div>
-            ))}
+            {후관_grid_items.map(item => {
+              if (item.empty) return <div key={item.id} className="club-item-v2 empty-v2"></div>;
+              const isStamped = stampedClubs.includes(item.id);
+              return (
+                <div 
+                  key={item.id} 
+                  className={`club-item-v2 ${isStamped ? 'stamped-v2' : 'clickable'}`}
+                  onClick={() => handleClubClick(item, isStamped)}
+                  style={{ cursor: isStamped ? 'default' : 'pointer' }}
+                >
+                  {item.name}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
