@@ -3,9 +3,9 @@
 .booth-layout-container {
   padding: 15px;
   background-color: #f0f2f5;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 60px); /* 하단 탭바 제외 */
   color: #333;
-  padding-bottom: 80px;
+  padding-bottom: 80px; /* 하단 탭바와의 간격 확보 */
 }
 
 .building-tabs {
@@ -43,53 +43,76 @@
   gap: 20px;
 }
 
-.floor-section {
+/* 새로운 층별 레이아웃 */
+.floor-row {
+  display: flex;
+  align-items: stretch; /* 자식 요소들이 같은 높이를 가지도록 */
   background-color: #fff;
   border-radius: 10px;
-  padding: 15px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  overflow: hidden; /* 모서리 둥글게 */
 }
 
-.floor-title {
-  font-size: 1.2em;
-  color: #333;
-  margin-bottom: 10px;
-  padding-left: 5px;
-  border-left: 4px solid #007bff;
-  line-height: 1;
-}
-
-/* 가로 스크롤이 가능한 일직선 배치 */
-.room-grid {
+.floor-label {
+  flex-shrink: 0; /* 너비가 줄어들지 않도록 */
+  width: 50px; /* 층 표시 영역 너비 */
+  background-color: #e9ecef;
   display: flex;
-  overflow-x: auto; /* 가로 스크롤 허용 */
-  gap: 8px;
-  padding-bottom: 10px; /* 스크롤바 공간 확보 */
-  
-  /* 스크롤바 스타일링 (Webkit) */
-  scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9em;
+  color: #555;
+  writing-mode: vertical-lr; /* 층 글자를 세로로 */
+  text-orientation: mixed;
+  padding: 10px 0;
 }
 
-.room-grid::-webkit-scrollbar {
-  height: 6px;
+.floor-content {
+  display: flex;
+  flex-grow: 1; /* 남은 공간을 모두 차지 */
+  padding: 10px; /* 내부 여백 */
 }
-.room-grid::-webkit-scrollbar-track {
-  background: transparent;
+
+.stairs-section {
+  flex-shrink: 0; /* 계단은 너비가 줄어들지 않도록 */
+  width: 40px; /* 계단 영역 고정 너비 */
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: #666;
+  margin: 0 5px; /* 계단 좌우 여백 */
+  border-radius: 5px;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.1);
+  writing-mode: vertical-lr;
+  text-orientation: mixed;
+  padding: 5px 0;
 }
-.room-grid::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 3px;
+
+.rooms-section {
+  display: flex;
+  /* flex-grow 값은 JS에서 ratio에 따라 동적으로 부여됨 */
+  /* 예를 들어 style="flex: 3" */
+  
+  border: 1px dashed #ced4da; /* 섹션 경계 시각화 (개발용, 나중에 제거 가능) */
+  border-radius: 5px;
+  margin: 0 5px; /* 섹션 간 여백 */
 }
+
+.rooms-section > .room-item {
+  flex: 1; /* 섹션 내에서 개별 방은 균등하게 너비를 차지 */
+  min-width: 60px; /* 방 최소 너비 */
+}
+
 
 .room-item {
-  flex: 0 0 auto; /* 크기 줄어들지 않음 */
-  width: 80px;    /* 고정 너비 */
-  height: 80px;   /* 고정 높이 */
-  
   background-color: #f9f9f9;
   border: 1px solid #eee;
   border-radius: 8px;
+  margin: 2px; /* 방과 방 사이 간격 */
   
   display: flex;
   flex-direction: column;
@@ -98,39 +121,35 @@
   text-align: center;
   padding: 5px;
   box-sizing: border-box;
+  font-size: 0.8em;
+  min-height: 70px; /* 방 최소 높이 */
 }
 
 /* 동아리가 있는 방 강조 */
 .room-item.has-club {
   background-color: #e8f4ff;
-  border-color: #b3d7ff;
+  border-color: #a3d7ff;
   box-shadow: 0 2px 4px rgba(0, 123, 255, 0.1);
 }
 
-/* 층계 등 시설물은 좀 더 좁게 */
-.room-item.type-facility {
-  width: 50px;
-  background-color: #eee;
-  color: #999;
-  border: none;
-}
+/* 특정 타입 방 스타일 */
+.room-item.type-facility { background-color: #f0f0f0; color: #888; border-color: #ddd; }
+.room-item.type-special { background-color: #e6ffe6; color: #33a033; border-color: #b3ffb3; }
+.room-item.type-teacher { background-color: #fffbe6; color: #a0a033; border-color: #ffedb3; }
+.room-item.type-outdoor { background-color: #e6f7ff; color: #33a0a0; border-color: #b3f7ff; }
 
-/* 교실명 (작게) */
+
+/* 교실명 */
 .room-name {
-  font-size: 0.75em;
-  color: #888;
+  font-size: 1em;
+  color: #333;
   margin-bottom: 4px;
   font-weight: normal;
+  line-height: 1.2;
+  word-break: keep-all;
 }
 
-/* 시설물 교실명은 조금 다르게 */
-.type-facility .room-name {
-  font-size: 0.8em;
-  color: #999;
-  margin-bottom: 0;
-}
-
-/* 동아리명 (크고 진하게) */
+/* 동아리명 (굵게) */
 .room-clubs {
   display: flex;
   flex-direction: column;
@@ -139,14 +158,13 @@
 }
 
 .club-badge {
-  /* 배지 스타일 제거하고 텍스트로 변경 */
   background: none;
-  color: #333; /* 검은색 글씨 */
+  color: #007bff; /* 파란색 글씨로 변경 */
   padding: 0;
-  font-size: 0.95em; /* 글자 키움 */
+  font-size: 0.8em; /* 글자 크기 조정 */
   font-weight: 800; /* 아주 굵게 */
   line-height: 1.2;
-  white-space: normal; /* 줄바꿈 허용 */
+  white-space: normal;
   word-break: keep-all;
   position: static;
   transform: none;
@@ -161,4 +179,40 @@
 
 .layout-info strong {
   color: #007bff;
+}
+
+/* 빈 공간을 차지하는 스페이서 */
+.empty-spacer {
+  flex: 1;
+  visibility: hidden; /* 공간은 차지하되 보이지 않게 */
+}
+
+/* 모바일 화면 최적화 (필요시 추가) */
+@media (max-width: 768px) {
+  .booth-layout-container {
+    padding: 10px;
+  }
+  .building-tab {
+    font-size: 0.9em;
+    padding: 10px 0;
+  }
+  .floor-label {
+    width: 40px;
+    font-size: 0.8em;
+  }
+  .stairs-section {
+    width: 30px;
+    font-size: 0.7em;
+  }
+  .room-item {
+    min-width: 50px;
+    min-height: 60px;
+    font-size: 0.7em;
+  }
+  .room-name {
+    font-size: 0.9em;
+  }
+  .club-badge {
+    font-size: 0.7em;
+  }
 }
