@@ -8,9 +8,9 @@ const schoolLayout = {
     {
       floor: "3층",
       sections: [
-        { type: "rooms", ratio: 3, rooms: [{ name: "도서관활용실", type: "special" }, { name: "도서실", type: "special" }] },
+        { type: "rooms", ratio: 2, rooms: [{ name: "컴퓨터실", type: "special" }, { name: "서버실", type: "facility" }] },
         { type: "stairs" },
-        { type: "rooms", ratio: 2, rooms: [{ name: "컴퓨터실", type: "special" }, { name: "서버실", type: "facility" }] }
+        { type: "rooms", ratio: 3, rooms: [{ name: "도서관활용실", type: "special" }, { name: "도서실", type: "special" }] }
       ]
     },
     {
@@ -126,57 +126,108 @@ function BoothLayout() {
         ))}
       </div>
 
-      <div className="floor-plan-container">
-        {schoolLayout[activeBuilding].map((floorData, floorIndex) => (
-          <div key={floorIndex} className="floor-row">
-            <div className="floor-label">{floorData.floor}</div>
-            <div className="floor-content">
-              {floorData.sections.map((section, secIndex) => {
-                if (section.type === 'stairs') {
-                  return <div key={secIndex} className="stairs-section">계단</div>;
-                }
-                
-                return (
-                  <div 
-                    key={secIndex} 
-                    className="rooms-section" 
-                    style={{ flex: section.ratio }}
-                  >
-                    {section.rooms.length > 0 ? (
-                      section.rooms.map((room, rIndex) => {
-                        const clubs = clubLocations[room.name] || [];
-                        return (
-                          <div key={rIndex} className={`room-item type-${room.type} ${clubs.length > 0 ? 'has-club' : ''}`}>
-                            <div className="room-name">{room.name}</div>
-                            {clubs.length > 0 && (
-                              <div className="room-clubs">
-                                {clubs.map((club, cIndex) => (
-                                  <span key={cIndex} className="club-badge">{club}</span>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })
-                    ) : (
-                      // 방이 없는 빈 섹션 (너비 유지를 위한 Spacer)
-                      <div className="empty-spacer"></div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      <div className="layout-info">
-        <p>📢 <strong>동아리 위치 찾기</strong></p>
-        <p>파란색 뱃지가 붙은 곳이 동아리 부스입니다.</p>
+            <div className="floor-plan-container">
 
-      </div>
-    </div>
-  );
-}
+              {schoolLayout[activeBuilding].map((floorData, floorIndex) => (
+
+                <div key={floorIndex} className="floor-row">
+
+                  <div className="floor-label">
+
+                    <div>{floorData.floor.replace('층', '')}</div>
+
+                    <div>층</div>
+
+                  </div>
+
+                  <div className="floor-content">
+
+                    {floorData.sections.map((section, secIndex) => {
+
+                      if (section.type === 'stairs') {
+
+                        return <div key={secIndex} className="stairs-section">계단</div>;
+
+                      }
+
+                      
+
+                      return (
+
+                        <div 
+
+                          key={secIndex} 
+
+                          className="rooms-section" 
+
+                          style={{ flex: section.ratio }}
+
+                        >
+
+                          {section.rooms.length > 0 ? (
+
+                            section.rooms.map((room, rIndex) => {
+
+                              const clubs = clubLocations[room.name] || [];
+
+                              const hasClubs = clubs.length > 0;
+
+                              return (
+
+                                <div key={rIndex} className={`room-item type-${room.type} ${hasClubs ? 'has-club' : 'no-club'}`}>
+
+                                  <div className="room-name">{room.name}</div>
+
+                                  {hasClubs && (
+
+                                    <div className="room-clubs">
+
+                                      {clubs.map((club, cIndex) => (
+
+                                        <span key={cIndex} className="club-badge">{club}</span>
+
+                                      ))}
+
+                                    </div>
+
+                                  )}
+
+                                </div>
+
+                              );
+
+                            })
+
+                          ) : (
+
+                            // 방이 없는 빈 섹션 (너비 유지를 위한 Spacer)
+
+                            <div className="empty-spacer"></div>
+
+                          )}
+
+                        </div>
+
+                      );
+
+                    })}
+
+                  </div>
+
+                </div>
+
+              ))}
+
+            </div>
+
+            
+
+            {/* 하단 설명 제거됨 */}
+
+          </div>
+
+        );
+
+      }
 
 export default BoothLayout;
