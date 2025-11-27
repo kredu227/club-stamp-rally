@@ -152,7 +152,7 @@ function StampManagementModal({ student, onClose, onStampChange }) {
               </div>
             ) : <p>획득한 스탬프가 없습니다.</p>}
             
-            {student.missionClear && (
+            {(student.missionClear || student.couponUsed) && (
               <div className="coupon-actions">
                 <button onClick={handleCouponReset} className="reset-coupon-button">
                   쿠폰 사용 초기화
