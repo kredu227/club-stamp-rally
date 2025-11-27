@@ -167,7 +167,12 @@ function StampPage({ studentId }) {
 
       <div className="mission-status-v2">
         <h3>미션 진행 상황</h3>
-        <p>총 스탬프: {totalStamps}개</p>
+        <div className="location-status total-status">
+          <p><strong>전체 달성도</strong> {totalStamps} / 25개</p>
+          <div className="progress-bar-container">
+            <div className="progress-bar total" style={{ width: `${Math.min((totalStamps / 25) * 100, 100)}%` }}></div>
+          </div>
+        </div>
         <div className="location-status">
           <p>[본관] {본관_stamps} / 5개 (필수)</p>
           <div className="progress-bar-container">

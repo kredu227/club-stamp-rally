@@ -22,6 +22,19 @@
   margin: 15px 0;
 }
 
+/* Total Status Styles */
+.location-status.total-status {
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.location-status.total-status p {
+  font-size: 1.1em;
+  margin-bottom: 8px;
+  color: #333;
+}
+
 .progress-bar-container {
   background-color: #e9ecef;
   border-radius: 8px;
@@ -35,6 +48,7 @@
   transition: width 0.5s ease-in-out;
 }
 
+.progress-bar.total { background-color: #28a745; } /* Green for total */
 .progress-bar.본관 { background-color: #007bff; }
 .progress-bar.후관 { background-color: #fd7e14; }
 

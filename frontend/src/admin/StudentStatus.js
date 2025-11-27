@@ -6,6 +6,7 @@ function StampManagementModal({ student, onClose, onStampChange }) {
   const [stampedClubs, setStampedClubs] = useState([]);
   const [allClubs, setAllClubs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedClubs, setSelectedClubs] = useState([]);
 
   useEffect(() => {
     const fetchStudentDetails = async () => {
@@ -21,6 +22,7 @@ function StampManagementModal({ student, onClose, onStampChange }) {
         
         setStampedClubs(data.stampedClubs || []);
         setAllClubs(data.allClubs || []);
+        setSelectedClubs([]); // 초기화
       } catch (err) {
         console.error(err);
       } finally {
@@ -30,10 +32,33 @@ function StampManagementModal({ student, onClose, onStampChange }) {
     fetchStudentDetails();
   }, [student.studentId]);
 
-  const handleStampDelete = async (clubId) => {
-    if (!window.confirm(`정말로 ${student.studentId} 학생의 스탬프를 삭제하시겠습니까?`)) {
+  const handleCheckboxChange = (clubId) => {
+    setSelectedClubs(prev => {
+      if (prev.includes(clubId)) {
+        return prev.filter(id => id !== clubId);
+      } else {
+        return [...prev, clubId];
+      }
+    });
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedClubs(stampedClubs);
+    } else {
+      setSelectedClubs([]);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedClubs.length === 0) {
+      alert('삭제할 스탬프를 선택해주세요.');
       return;
     }
+    if (!window.confirm(`선택한 ${selectedClubs.length}개의 스탬프를 삭제하시겠습니까?`)) {
+      return;
+    }
+
     try {
       const adminPassword = sessionStorage.getItem('adminAuth');
       const headers = { 
@@ -42,18 +67,18 @@ function StampManagementModal({ student, onClose, onStampChange }) {
       };
       const body = JSON.stringify({
         studentId: student.studentId,
-        clubId: clubId,
-        action: 'remove'
+        clubIds: selectedClubs
       });
 
-      const res = await fetch('/api/admin/manage-stamp', { method: 'POST', headers, body });
+      const res = await fetch('/api/admin/delete-stamps-bulk', { method: 'POST', headers, body });
       const data = await res.json();
 
-      if (!res.ok || !data.success) throw new Error('스탬프 삭제에 실패했습니다.');
+      if (!res.ok || !data.success) throw new Error(data.message || '스탬프 삭제에 실패했습니다.');
       
-      alert('스탬프가 삭제되었습니다.');
-      setStampedClubs(data.updatedStampedClubs); // 서버로부터 받은 최신 배열로 UI 업데이트
-      onStampChange(); // 부모 컴포넌트(학생 목록) 데이터 새로고침
+      alert('선택한 스탬프가 삭제되었습니다.');
+      setStampedClubs(data.updatedStampedClubs);
+      setSelectedClubs([]); // 선택 초기화
+      onStampChange(); // 부모 컴포넌트 데이터 새로고침
     } catch (err) {
       alert(err.message);
     }
@@ -90,21 +115,49 @@ function StampManagementModal({ student, onClose, onStampChange }) {
         <h2>{student.studentId} 스탬프 관리</h2>
         {loading ? <p>로딩 중...</p> : (
           <>
-            <ul className="stamp-list">
-              {stampedClubs.length > 0 ? stampedClubs.map(clubId => {
-                const club = allClubs.find(c => c.id === clubId);
-                return (
-                  <li key={clubId}>
-                    <span>{club ? club.name : clubId} ({club ? club.location : '알 수 없음'})</span>
-                    <button onClick={() => handleStampDelete(clubId)} className="delete-button">삭제</button>
-                  </li>
-                );
-              }) : <p>획득한 스탬프가 없습니다.</p>}
-            </ul>
+            {stampedClubs.length > 0 ? (
+              <div className="stamp-list-container">
+                <div className="list-header">
+                  <label>
+                    <input 
+                      type="checkbox" 
+                      checked={stampedClubs.length > 0 && selectedClubs.length === stampedClubs.length}
+                      onChange={handleSelectAll}
+                    />
+                    전체 선택
+                  </label>
+                  <button onClick={handleBulkDelete} className="bulk-delete-button" disabled={selectedClubs.length === 0}>
+                    선택 삭제
+                  </button>
+                </div>
+                <ul className="stamp-list">
+                  {stampedClubs.map(clubId => {
+                    const club = allClubs.find(c => c.id === clubId);
+                    return (
+                      <li key={clubId} className="stamp-item">
+                        <label>
+                          <input 
+                            type="checkbox" 
+                            checked={selectedClubs.includes(clubId)}
+                            onChange={() => handleCheckboxChange(clubId)}
+                          />
+                          <span className="club-info">
+                            {club ? club.name : clubId} <small>({club ? club.location : '알 수 없음'})</small>
+                          </span>
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : <p>획득한 스탬프가 없습니다.</p>}
+            
             {student.missionClear && (
-              <button onClick={handleCouponReset} className="reset-coupon-button">
-                쿠폰 사용 초기화
-              </button>
+              <div className="coupon-actions">
+                <button onClick={handleCouponReset} className="reset-coupon-button">
+                  쿠폰 사용 초기화
+                </button>
+              </div>
             )}
           </>
         )}
@@ -212,6 +265,10 @@ function StudentStatus() {
               <h3>미션 완료 학생</h3>
               <p>{stats.missionCompleters}</p>
             </div>
+            <div className="stat-item">
+              <h3>쿠폰 사용 학생</h3>
+              <p>{stats.couponUsedCount}</p>
+            </div>
           </div>
         )}
       </section>
@@ -221,7 +278,9 @@ function StudentStatus() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>학번</th>
+              <th onClick={() => requestSort('studentId')} className="sortable-header">
+                학번 {sortConfig.key === 'studentId' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : ''}
+              </th>
               <th onClick={() => requestSort('totalStamps')} className="sortable-header">
                 총 스탬프 개수 {sortConfig.key === 'totalStamps' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : ''}
               </th>

@@ -307,6 +307,7 @@ async function getAdminStats() {
   const totalParticipants = allStudentData.length;
   let totalStamps = 0;
   let missionCompleters = 0;
+  let couponUsedCount = 0;
 
   allStudentData.forEach(student => {
     const stampedClubIds = Object.keys(student.stamps);
@@ -318,9 +319,13 @@ async function getAdminStats() {
     if (본관_stamps >= 5 && 후관_stamps >= 3) {
       missionCompleters++;
     }
+
+    if (student.couponUsed) {
+      couponUsedCount++;
+    }
   });
 
-  return { totalParticipants, totalStamps, missionCompleters };
+  return { totalParticipants, totalStamps, missionCompleters, couponUsedCount };
 }
 
 
@@ -387,6 +392,7 @@ module.exports = {
   getAdminStats,
   getAllStudentStatus,
   manageStamp,
+  deleteStampsBulk,
 };
 
   
@@ -412,6 +418,25 @@ module.exports = {
   await setStudentData(studentId, newStudentData);
   
   const updatedStampedClubs = Object.keys(newStamps);
+  return { success: true, updatedStampedClubs };
+}
+
+async function deleteStampsBulk(studentId, clubIds) {
+  if (!process.env.KV_REST_API_URL) {
+    return { success: false, message: '스탬프 관리는 Vercel KV가 연결된 배포 환경에서만 가능합니다.' };
+  }
+
+  const studentData = await getStudentData(studentId);
+  let currentStamps = { ...studentData.stamps };
+
+  clubIds.forEach(clubId => {
+    delete currentStamps[clubId];
+  });
+
+  const newStudentData = { ...studentData, stamps: currentStamps };
+  await setStudentData(studentId, newStudentData);
+
+  const updatedStampedClubs = Object.keys(currentStamps);
   return { success: true, updatedStampedClubs };
 }
 

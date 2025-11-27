@@ -150,6 +150,25 @@ adminRouter.post('/manage-stamp', async (req, res) => {
   }
 });
 
+// 스탬프 일괄 삭제 API
+adminRouter.post('/delete-stamps-bulk', async (req, res) => {
+  const { studentId, clubIds } = req.body;
+  if (!studentId || !clubIds || !Array.isArray(clubIds)) {
+    return res.status(400).json({ success: false, message: 'Student ID and list of Club IDs are required.' });
+  }
+  try {
+    const result = await db.deleteStampsBulk(studentId, clubIds);
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(400).json({ success: false, message: result.message });
+    }
+  } catch (error) {
+    console.error('Error deleting stamps bulk:', error);
+    res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+  }
+});
+
 // 쿠폰 사용 초기화 API
 adminRouter.post('/reset-coupon', async (req, res) => {
   const { studentId } = req.body;

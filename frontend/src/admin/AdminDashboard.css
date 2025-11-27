@@ -109,6 +109,7 @@
   background-color: #f8f9fa;
   font-weight: 600;
   color: #495057;
+  cursor: pointer;
 }
 
 .admin-table tbody tr:hover {
@@ -117,10 +118,15 @@
 
 .sortable-header {
   cursor: pointer;
+  user-select: none; /* 텍스트 선택 방지 */
+}
+
+.sortable-header:hover {
+  background-color: #e2e6ea;
 }
 
 /* 버튼 스타일 */
-.manage-button, .delete-button, .reset-coupon-button, .close-button {
+.manage-button, .delete-button, .reset-coupon-button, .close-button, .bulk-delete-button {
   border: none;
   padding: 8px 12px;
   border-radius: 4px;
@@ -140,6 +146,17 @@
   color: white;
 }
 .delete-button:hover { background-color: #c82333; }
+
+.bulk-delete-button {
+  background-color: #dc3545;
+  color: white;
+}
+.bulk-delete-button:hover { background-color: #c82333; }
+.bulk-delete-button:disabled {
+  background-color: #e0e0e0;
+  color: #a0a0a0;
+  cursor: not-allowed;
+}
 
 .reset-coupon-button {
   background-color: #ffc107;
@@ -170,6 +187,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
 .modal-content {
@@ -181,17 +199,51 @@
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
+.stamp-list-container {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 10px;
+}
+
 .stamp-list {
   list-style-type: none;
   padding: 0;
   max-height: 300px;
   overflow-y: auto;
+  margin: 0;
 }
 
-.stamp-list li {
+.stamp-item {
+  padding: 8px 5px;
+  border-bottom: 1px solid #f1f3f5;
+}
+.stamp-item:last-child {
+  border-bottom: none;
+}
+
+.stamp-item label {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  width: 100%;
+}
+
+.stamp-item input[type="checkbox"], .list-header input[type="checkbox"] {
+  margin-right: 10px;
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+.club-info {
+  flex-grow: 1;
 }
