@@ -300,30 +300,16 @@ async function getAllStudentStamps() {
 async function getAdminStats() {
   if (!process.env.KV_REST_API_URL) {
     console.log('[LOG] Vercel KV environment variables not found. Returning zero stats for getAdminStats.');
-    return { totalParticipants: 0, totalStamps: 0, missionCompleters: 0 };
+    return { totalParticipants: 0, totalStamps: 0, missionCompleters: 0, couponUsedCount: 0 };
   }
 
-  const allStudentData = await getAllStudentStamps();
-  const totalParticipants = allStudentData.length;
-  let totalStamps = 0;
-  let missionCompleters = 0;
-  let couponUsedCount = 0;
-
-  allStudentData.forEach(student => {
-    const stampedClubIds = Object.keys(student.stamps);
-    totalStamps += stampedClubIds.length;
-
-    const 본관_stamps = clubs.filter(c => c.location === '본관' && stampedClubIds.includes(c.id)).length;
-    const 후관_stamps = clubs.filter(c => c.location === '후관' && stampedClubIds.includes(c.id)).length;
-
-    if (본관_stamps >= 5 && 후관_stamps >= 3) {
-      missionCompleters++;
-    }
-
-    if (student.couponUsed) {
-      couponUsedCount++;
-    }
-  });
+  // getAllStudentStamps 대신 getAllStudentStatus를 사용하여 완전한 데이터(couponUsed 포함)를 가져옵니다.
+  const allStatus = await getAllStudentStatus();
+  
+  const totalParticipants = allStatus.length;
+  const totalStamps = allStatus.reduce((sum, s) => sum + s.totalStamps, 0);
+  const missionCompleters = allStatus.filter(s => s.missionClear).length;
+  const couponUsedCount = allStatus.filter(s => s.couponUsed).length;
 
   return { totalParticipants, totalStamps, missionCompleters, couponUsedCount };
 }
