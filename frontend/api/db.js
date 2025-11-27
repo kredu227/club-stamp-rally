@@ -101,16 +101,29 @@ async function recordStampByQrCode(studentId, qrCode) {
   
   await setStudentData(studentId, studentData);
 
-  // 스탬프 기록 후 업데이트된 학생 스탬프 현황을 가져옵니다.
-  const updatedStatus = await getStudentStampStatus(studentId);
+  // 스탬프 기록 후 업데이트된 학생 스탬프 현황을 직접 계산합니다 (KV 호출 최소화)
+  const stampedClubIds = Object.keys(newStamps).filter(clubId => newStamps[clubId]);
+
+  const 본관_clubs_all = clubs.filter(c => c.location === '본관');
+  const 후관_clubs_all = clubs.filter(c => c.location === '후관');
+
+  const 본관_stamps = 본관_clubs_all.filter(club => stampedClubIds.includes(club.id)).length;
+  const 후관_stamps = 후관_clubs_all.filter(club => stampedClubIds.includes(club.id)).length;
+
+  const 본관_mission_clear = 본관_stamps >= 5;
+  const 후관_mission_clear = 후관_stamps >= 3;
+  const overall_mission_clear = 본관_mission_clear && 후관_mission_clear;
+
+  // couponUsed는 studentData에서 직접 가져옵니다.
+  const couponUsed = studentData.couponUsed;
 
   // 방금 스탬프를 찍어서 미션 클리어가 되었는지 확인
-  const justClearedMission = !updatedStatus.couponUsed && updatedStatus.overall_mission_clear;
+  const justClearedMission = !couponUsed && overall_mission_clear;
 
   return {
     success: true,
     message: `${club.name} 스탬프를 획득했습니다!`,
-    overall_mission_clear: updatedStatus.overall_mission_clear,
+    overall_mission_clear: overall_mission_clear,
     justClearedMission: justClearedMission // 방금 미션을 클리어했는지 여부
   };
 }
