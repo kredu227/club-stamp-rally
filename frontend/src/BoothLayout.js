@@ -85,23 +85,23 @@ const clubLocations = {
   "물리실": ["가피"],
   "2-10": ["개척"],
   "영어실": ["국과수"],
-  "2-2": ["그대의 말로"],
-  "도서실": ["그루터기"], 
+  "2-2": ["그대의말로"],
+  "도서실": ["그루터기"],
   "2-1": ["글로벌리더십"],
   "2-5": ["나라사랑"],
   "1-4": ["내꿈찾아삼만리"],
   "2-7": ["농구부"],
-  "1-3": ["대중문화탐구부"],
+  "1-3": ["대중문화탐구"],
   "2-8": ["독수공방"],
   "3-10": ["또래상담"],
   "2-3": ["레드타이"],
-  "생물실": ["바이오홀릭"],
+  "생물실": ["BIOHOLIC"],
   "2-6": ["방송부"],
   "1-1": ["생각의판"],
   "컴퓨터실": ["아이러닝"],
   "2-9": ["아크매틱"],
   "화학실": ["에코"],
-  "통합지원1": ["여가활용부"], 
+  "통합지원1": ["여가활용부"],
   "1-6": ["역사랑"],
   "1-2": ["정치언론부"],
   "1-5": ["축구부"],
@@ -126,108 +126,108 @@ function BoothLayout() {
         ))}
       </div>
 
-            <div className="floor-plan-container">
+      <div className="floor-plan-container">
 
-              {schoolLayout[activeBuilding].map((floorData, floorIndex) => (
+        {schoolLayout[activeBuilding].map((floorData, floorIndex) => (
 
-                <div key={floorIndex} className="floor-row">
+          <div key={floorIndex} className="floor-row">
 
-                  <div className="floor-label">
+            <div className="floor-label">
 
-                    <div>{floorData.floor.replace('층', '')}</div>
+              <div>{floorData.floor.replace('층', '')}</div>
 
-                    <div>층</div>
-
-                  </div>
-
-                  <div className="floor-content">
-
-                    {floorData.sections.map((section, secIndex) => {
-
-                      if (section.type === 'stairs') {
-
-                        return <div key={secIndex} className="stairs-section">계단</div>;
-
-                      }
-
-                      
-
-                      return (
-
-                        <div 
-
-                          key={secIndex} 
-
-                          className="rooms-section" 
-
-                          style={{ flex: section.ratio }}
-
-                        >
-
-                          {section.rooms.length > 0 ? (
-
-                            section.rooms.map((room, rIndex) => {
-
-                              const clubs = clubLocations[room.name] || [];
-
-                              const hasClubs = clubs.length > 0;
-
-                              return (
-
-                                <div key={rIndex} className={`room-item type-${room.type} ${hasClubs ? 'has-club' : 'no-club'}`}>
-
-                                  <div className="room-name">{room.name}</div>
-
-                                  {hasClubs && (
-
-                                    <div className="room-clubs">
-
-                                      {clubs.map((club, cIndex) => (
-
-                                        <span key={cIndex} className="club-badge">{club}</span>
-
-                                      ))}
-
-                                    </div>
-
-                                  )}
-
-                                </div>
-
-                              );
-
-                            })
-
-                          ) : (
-
-                            // 방이 없는 빈 섹션 (너비 유지를 위한 Spacer)
-
-                            <div className="empty-spacer"></div>
-
-                          )}
-
-                        </div>
-
-                      );
-
-                    })}
-
-                  </div>
-
-                </div>
-
-              ))}
+              <div>층</div>
 
             </div>
 
-            
+            <div className="floor-content">
 
-            {/* 하단 설명 제거됨 */}
+              {floorData.sections.map((section, secIndex) => {
+
+                if (section.type === 'stairs') {
+
+                  return <div key={secIndex} className="stairs-section">계단</div>;
+
+                }
+
+
+
+                return (
+
+                  <div
+
+                    key={secIndex}
+
+                    className="rooms-section"
+
+                    style={{ flex: section.ratio }}
+
+                  >
+
+                    {section.rooms.length > 0 ? (
+
+                      section.rooms.map((room, rIndex) => {
+
+                        const clubs = clubLocations[room.name] || [];
+
+                        const hasClubs = clubs.length > 0;
+
+                        return (
+
+                          <div key={rIndex} className={`room-item type-${room.type} ${hasClubs ? 'has-club' : 'no-club'}`}>
+
+                            <div className="room-name">{room.name}</div>
+
+                            {hasClubs && (
+
+                              <div className="room-clubs">
+
+                                {clubs.map((club, cIndex) => (
+
+                                  <span key={cIndex} className="club-badge">{club}</span>
+
+                                ))}
+
+                              </div>
+
+                            )}
+
+                          </div>
+
+                        );
+
+                      })
+
+                    ) : (
+
+                      // 방이 없는 빈 섹션 (너비 유지를 위한 Spacer)
+
+                      <div className="empty-spacer"></div>
+
+                    )}
+
+                  </div>
+
+                );
+
+              })}
+
+            </div>
 
           </div>
 
-        );
+        ))}
 
-      }
+      </div>
+
+
+
+      {/* 하단 설명 제거됨 */}
+
+    </div>
+
+  );
+
+}
 
 export default BoothLayout;
