@@ -80,6 +80,7 @@
   color: #444;
   line-height: 1.6;
   word-break: keep-all;
+  white-space: pre-wrap;
   animation: slideDown 0.3s ease-out forwards;
 }
 
