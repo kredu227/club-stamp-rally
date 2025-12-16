@@ -76,6 +76,18 @@ async function setStudentData(studentId, data) {
 
 // Vercel KV를 사용하도록 수정 (async 함수)
 async function recordStampByQrCode(studentId, qrCode) {
+  // 1. 축제 시작 시간 체크 (2025년 12월 19일 오전 8시 KST)
+  // 한국 표준시(KST)는 UTC+9 입니다.
+  const START_TIME = new Date('2025-12-19T08:00:00+09:00');
+  const now = new Date();
+
+  // 특정 테스트 계정(10913)은 시간 체크를 건너뜜
+  if (studentId !== '10913') { // studentId가 문자열 '10913'이 아닐 경우에만 시간 체크
+    if (now < START_TIME) {
+      return { success: false, message: '아직 축제 시작 전입니다! 12월 19일 오전 8시부터 스탬프를 획득할 수 있습니다.' };
+    }
+  }
+
   // Vercel 환경 변수가 설정되어 있지 않으면 스탬프 기록 불가
   if (!process.env.KV_REST_API_URL) {
     console.log('[LOG] Vercel KV environment variables not found. Stamp recording is disabled for local JSON file fallback.');
