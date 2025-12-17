@@ -126,8 +126,8 @@ const activities = [
   {
     "name": "여가활용부",
     "location": "통합지원실",
-    "description": "좋은 글귀를 손글씨로 써서 전시",
-    "detail": "좋은 글귀를 손글씨로 써서 통합지원반 앞 복도에 전시할 예정입니다."
+    "description": "전시만 봐DO! QR 찍GO!",
+    "detail": "멋글씨 작품활동 전시(본관 1층 통합지원실 앞 복도)"
   },
   {
     "name": "역사랑",
