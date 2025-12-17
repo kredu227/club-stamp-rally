@@ -264,34 +264,68 @@ function CurrentActivityMessage({ schedule }) {
 
   React.useEffect(() => {
     const updateStatus = () => {
+      // 1. 현재 시간을 한국 표준시(KST) 기준으로 변환
       const now = new Date();
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
-      const currentTimeVal = currentHour * 60 + currentMinute;
+      // toLocaleString을 사용하여 한국 시간 문자열을 얻고, 다시 Date 객체로 변환하여 컴포넌트 추출
+      const kstStr = now.toLocaleString("en-US", { timeZone: "Asia/Seoul" });
+      const kstDate = new Date(kstStr);
 
-      const found = schedule.find(item => {
-        const [startHour, startMinute] = item.start.split(':').map(Number);
-        const [endHour, endMinute] = item.end.split(':').map(Number);
-        const startTimeVal = startHour * 60 + startMinute;
-        const endTimeVal = endHour * 60 + endMinute;
+      const year = kstDate.getFullYear();
+      const month = kstDate.getMonth() + 1; // 0-based
+      const date = kstDate.getDate();
+      const hour = kstDate.getHours();
+      const minute = kstDate.getMinutes();
+      const currentTimeVal = hour * 60 + minute;
 
-        return currentTimeVal >= startTimeVal && currentTimeVal < endTimeVal;
-      });
+      // 2. 날짜 체크
+      // 행사 날짜: 2025년 12월 19일
+      if (year < 2025 || (year === 2025 && month < 12) || (year === 2025 && month === 12 && date < 19)) {
+        setCurrentActivity("아직 행사시작 전입니다.");
+        return;
+      }
 
-      if (found) {
-        setCurrentActivity(`지금은 ${found.activity} 시간입니다.`);
-      } else {
-        // 일정이 시작되기 전이나 모든 일정이 끝난 후
-        if (currentTimeVal < 8 * 60 + 40) {
-          setCurrentActivity("아직 학술제 시작 전입니다.");
-        } else {
-          setCurrentActivity("오늘의 학술제 일정이 모두 종료되었습니다.");
+      // 행사 당일 체크 (12월 19일)
+      if (year === 2025 && month === 12 && date === 19) {
+        // 13:10 이후 체크
+        if (currentTimeVal >= 13 * 60 + 10) {
+          setCurrentActivity("학술제 행사가 종료되었습니다.");
+          return;
         }
+
+        // 08:30 이전 체크 (선택사항, 스케줄 매칭 안되면 아래 로직으로 처리됨)
+        if (currentTimeVal < 8 * 60 + 40) {
+          setCurrentActivity("아직 행사시작 전입니다.");
+          return;
+        }
+
+        // 스케줄 매칭 (KST 기준 시간값 사용)
+        const found = schedule.find(item => {
+          const [startHour, startMinute] = item.start.split(':').map(Number);
+          const [endHour, endMinute] = item.end.split(':').map(Number);
+          const startTimeVal = startHour * 60 + startMinute;
+          const endTimeVal = endHour * 60 + endMinute;
+
+          return currentTimeVal >= startTimeVal && currentTimeVal < endTimeVal;
+        });
+
+        if (found) {
+          setCurrentActivity(`지금은 ${found.activity} 시간입니다.`);
+        } else {
+          // 스케줄 사이 빈 시간 등
+          setCurrentActivity("쉬는 시간입니다.");
+        }
+        return;
+      }
+
+      // 12월 19일 이후
+      if (year > 2025 || (year === 2025 && month === 12 && date > 19)) {
+        setCurrentActivity("학술제 행사가 종료되었습니다.");
+        return;
       }
     };
 
     updateStatus();
-    const interval = setInterval(updateStatus, 60000); // 1분마다 업데이트
+    const interval = setInterval(updateStatus, 10000); // 10초마다 업데이트
     return () => clearInterval(interval);
   }, [schedule]);
 
