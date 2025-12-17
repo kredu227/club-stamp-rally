@@ -222,12 +222,84 @@ function BoothLayout() {
 
 
 
-      {/* 하단 설명 제거됨 */}
+      {/* 하단 설명 제거됨 -> 학술제 진행 일정 추가됨 */}
+      <div className="schedule-container">
+        <CurrentActivityMessage schedule={festivalSchedule} />
+
+        <h3 className="schedule-title">📅 학술제 진행 일정</h3>
+        <table className="schedule-table">
+          <thead>
+            <tr>
+              <th>시간</th>
+              <th>내용</th>
+            </tr>
+          </thead>
+          <tbody>
+            {festivalSchedule.map((item, index) => (
+              <tr key={index}>
+                <td className="time-col">{item.time}</td>
+                <td className="desc-col">{item.activity}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
     </div>
-
   );
+}
 
+// 학술제 일정 데이터
+const festivalSchedule = [
+  { time: "08:40 ~ 09:30", activity: "행사장 설치 및 사전 준비", start: "08:40", end: "09:30" },
+  { time: "09:30 ~ 11:30", activity: "본 행사 (전시, 체험 등)", start: "09:30", end: "11:30" },
+  { time: "11:30 ~ 12:00", activity: "소속 동아리 복귀 후 행사장 정리", start: "11:30", end: "12:00" },
+  { time: "12:00 ~ 12:10", activity: "학급으로 이동", start: "12:00", end: "12:10" },
+  { time: "12:10 ~ ", activity: "점심식사", start: "12:10", end: "23:59" },
+];
+
+// 현재 활동 메시지 컴포넌트
+function CurrentActivityMessage({ schedule }) {
+  const [currentActivity, setCurrentActivity] = useState("");
+
+  React.useEffect(() => {
+    const updateStatus = () => {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      const currentTimeVal = currentHour * 60 + currentMinute;
+
+      const found = schedule.find(item => {
+        const [startHour, startMinute] = item.start.split(':').map(Number);
+        const [endHour, endMinute] = item.end.split(':').map(Number);
+        const startTimeVal = startHour * 60 + startMinute;
+        const endTimeVal = endHour * 60 + endMinute;
+
+        return currentTimeVal >= startTimeVal && currentTimeVal < endTimeVal;
+      });
+
+      if (found) {
+        setCurrentActivity(`지금은 ${found.activity} 시간입니다.`);
+      } else {
+        // 일정이 시작되기 전이나 모든 일정이 끝난 후
+        if (currentTimeVal < 8 * 60 + 40) {
+          setCurrentActivity("아직 학술제 시작 전입니다.");
+        } else {
+          setCurrentActivity("오늘의 학술제 일정이 모두 종료되었습니다.");
+        }
+      }
+    };
+
+    updateStatus();
+    const interval = setInterval(updateStatus, 60000); // 1분마다 업데이트
+    return () => clearInterval(interval);
+  }, [schedule]);
+
+  return (
+    <div className="current-status-message">
+      {currentActivity}
+    </div>
+  );
 }
 
 export default BoothLayout;

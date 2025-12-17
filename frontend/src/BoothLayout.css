@@ -218,3 +218,132 @@
     height: 90px;
   }
 }
+
+/* --- Festival Schedule Styles --- */
+
+.schedule-container {
+  margin-top: 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* 부드러운 그림자 */
+  text-align: center;
+  border: 1px solid #eef0f5;
+}
+
+/* 일정 제목 */
+.schedule-title {
+  margin-top: 20px;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #333;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* 현재 상태 메시지 박스 */
+.current-status-message {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* 보라빛 그라데이션 */
+  color: white;
+  padding: 15px 20px;
+  border-radius: 50px; /* 둥근 캡슐 형태 */
+  font-weight: bold;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 10px rgba(118, 75, 162, 0.4);
+  margin-bottom: 25px;
+  display: inline-block; /* 텍스트 길이에 맞춤 */
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 4px 10px rgba(118, 75, 162, 0.4); }
+  50% { transform: scale(1.03); box-shadow: 0 6px 15px rgba(118, 75, 162, 0.6); }
+  100% { transform: scale(1); box-shadow: 0 4px 10px rgba(118, 75, 162, 0.4); }
+}
+
+/* 일정 테이블 */
+.schedule-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+  text-align: left;
+  border-radius: 8px;
+  overflow: hidden; /* 모서리 둥글게 */
+  border: 1px solid #e0e0e0;
+}
+
+.schedule-table th {
+  background-color: #f8f9fa;
+  color: #555;
+  font-weight: 700;
+  padding: 12px 15px;
+  border-bottom: 2px solid #e0e0e0;
+  text-align: center;
+}
+
+.schedule-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #444;
+  vertical-align: middle;
+}
+
+.schedule-table tr:last-child td {
+  border-bottom: none;
+}
+
+.schedule-table tr:hover {
+  background-color: #fcfcfc;
+}
+
+.time-col {
+  width: 35%;
+  font-feature-settings: "tnum"; /* 숫자 너비 고정 */
+  color: #666;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap; /* 줄바꿈 방지 */
+}
+
+.desc-col {
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* 모바일 대응 추가 */
+@media (max-width: 480px) {
+  .schedule-container {
+    padding: 15px;
+    margin-top: 20px;
+  }
+  
+  .current-status-message {
+    font-size: 1rem;
+    padding: 12px 18px;
+    width: 90%; /* 모바일에서는 너비 확장 */
+    box-sizing: border-box;
+  }
+  
+  .schedule-title {
+    font-size: 1.1rem;
+   }
+  
+  .schedule-table {
+    font-size: 0.85rem;
+  }
+  
+  .schedule-table th, 
+  .schedule-table td {
+    padding: 10px 8px;
+  }
+  
+  .time-col {
+    width: 40%;
+    white-space: normal; /* 모바일에서는 시간도 줄바꿈 허용할 수 있음 */
+    font-size: 0.8rem;
+  }
+}
