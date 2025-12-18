@@ -16,7 +16,9 @@ function AdminLogin() {
         body: JSON.stringify({ password }),
       });
       if (response.ok) {
+        const data = await response.json();
         sessionStorage.setItem('adminAuth', password); // 임시 인증 토큰 저장
+        sessionStorage.setItem('adminRole', data.role); // 역할 정보 저장 (super 또는 viewer)
         navigate('/admin/dashboard');
       } else {
         setError('비밀번호가 올바르지 않습니다.');

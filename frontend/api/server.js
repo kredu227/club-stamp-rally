@@ -75,7 +75,9 @@ app.post('/api/coupon/use', async (req, res) => {
 app.post('/api/admin/login', (req, res) => {
   const { password } = req.body;
   if (password === process.env.ADMIN_PASSWORD) {
-    res.json({ success: true });
+    res.json({ success: true, role: 'super' });
+  } else if (password === (process.env.VIEWER_PASSWORD || 'adminpt')) {
+    res.json({ success: true, role: 'viewer' });
   } else {
     res.status(401).json({ success: false, message: 'Invalid password' });
   }
@@ -88,10 +90,23 @@ const adminAuth = (req, res, next) => {
   const authHeader = req.headers.authorization;
   // "Bearer <password>" 형식으로 비밀번호를 받습니다.
   const password = authHeader && authHeader.split(' ')[1]; 
-  if (password && password === process.env.ADMIN_PASSWORD) {
-    next(); // 인증 성공
+  
+  if (password === process.env.ADMIN_PASSWORD) {
+    req.adminRole = 'super';
+    next();
+  } else if (password === (process.env.VIEWER_PASSWORD || 'adminpt')) {
+    req.adminRole = 'viewer';
+    next();
   } else {
     res.status(403).json({ success: false, message: 'Not authorized' });
+  }
+};
+
+const requireSuperAdmin = (req, res, next) => {
+  if (req.adminRole === 'super') {
+    next();
+  } else {
+    res.status(403).json({ success: false, message: '권한이 부족합니다. (Requires Super Admin)' });
   }
 };
 
@@ -132,7 +147,7 @@ adminRouter.get('/all-student-stamps', async (req, res) => {
 });
 
 // 스탬프 수동 관리 API
-adminRouter.post('/manage-stamp', async (req, res) => {
+adminRouter.post('/manage-stamp', requireSuperAdmin, async (req, res) => {
   const { studentId, clubId, action } = req.body;
   if (!studentId || !clubId || !action) {
     return res.status(400).json({ success: false, message: 'Student ID, Club ID, and action are required.' });
@@ -151,7 +166,7 @@ adminRouter.post('/manage-stamp', async (req, res) => {
 });
 
 // 스탬프 일괄 삭제 API
-adminRouter.post('/delete-stamps-bulk', async (req, res) => {
+adminRouter.post('/delete-stamps-bulk', requireSuperAdmin, async (req, res) => {
   const { studentId, clubIds } = req.body;
   if (!studentId || !clubIds || !Array.isArray(clubIds)) {
     return res.status(400).json({ success: false, message: 'Student ID and list of Club IDs are required.' });
@@ -170,7 +185,7 @@ adminRouter.post('/delete-stamps-bulk', async (req, res) => {
 });
 
 // 쿠폰 사용 초기화 API
-adminRouter.post('/reset-coupon', async (req, res) => {
+adminRouter.post('/reset-coupon', requireSuperAdmin, async (req, res) => {
   const { studentId } = req.body;
   if (!studentId) {
     return res.status(400).json({ success: false, message: 'Student ID is required.' });

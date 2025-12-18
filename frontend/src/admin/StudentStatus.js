@@ -7,6 +7,8 @@ function StampManagementModal({ student, onClose, onStampChange }) {
   const [allClubs, setAllClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedClubs, setSelectedClubs] = useState([]);
+  const adminRole = sessionStorage.getItem('adminRole');
+  const isViewer = adminRole === 'viewer';
 
   useEffect(() => {
     const fetchStudentDetails = async () => {
@@ -33,6 +35,7 @@ function StampManagementModal({ student, onClose, onStampChange }) {
   }, [student.studentId]);
 
   const handleCheckboxChange = (clubId) => {
+    if (isViewer) return;
     setSelectedClubs(prev => {
       if (prev.includes(clubId)) {
         return prev.filter(id => id !== clubId);
@@ -43,6 +46,7 @@ function StampManagementModal({ student, onClose, onStampChange }) {
   };
 
   const handleSelectAll = (e) => {
+    if (isViewer) return;
     if (e.target.checked) {
       setSelectedClubs(stampedClubs);
     } else {
@@ -51,6 +55,7 @@ function StampManagementModal({ student, onClose, onStampChange }) {
   };
 
   const handleBulkDelete = async () => {
+    if (isViewer) return;
     if (selectedClubs.length === 0) {
       alert('삭제할 스탬프를 선택해주세요.');
       return;
@@ -85,6 +90,7 @@ function StampManagementModal({ student, onClose, onStampChange }) {
   };
 
   const handleCouponReset = async () => {
+    if (isViewer) return;
     if (!window.confirm(`${student.studentId} 학생의 쿠폰 사용 상태를 초기화하시겠습니까?`)) {
       return;
     }
@@ -112,36 +118,40 @@ function StampManagementModal({ student, onClose, onStampChange }) {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>{student.studentId} 스탬프 관리</h2>
+        <h2>{student.studentId} 스탬프 {isViewer ? '상세 정보' : '관리'}</h2>
         {loading ? <p>로딩 중...</p> : (
           <>
             {stampedClubs.length > 0 ? (
               <div className="stamp-list-container">
-                <div className="list-header">
-                  <label>
-                    <input 
-                      type="checkbox" 
-                      checked={stampedClubs.length > 0 && selectedClubs.length === stampedClubs.length}
-                      onChange={handleSelectAll}
-                    />
-                    전체 선택
-                  </label>
-                  <button onClick={handleBulkDelete} className="bulk-delete-button" disabled={selectedClubs.length === 0}>
-                    선택 삭제
-                  </button>
-                </div>
+                {!isViewer && (
+                  <div className="list-header">
+                    <label>
+                      <input 
+                        type="checkbox" 
+                        checked={stampedClubs.length > 0 && selectedClubs.length === stampedClubs.length}
+                        onChange={handleSelectAll}
+                      />
+                      전체 선택
+                    </label>
+                    <button onClick={handleBulkDelete} className="bulk-delete-button" disabled={selectedClubs.length === 0}>
+                      선택 삭제
+                    </button>
+                  </div>
+                )}
                 <ul className="stamp-list">
                   {stampedClubs.map(clubId => {
                     const club = allClubs.find(c => c.id === clubId);
                     return (
                       <li key={clubId} className="stamp-item">
                         <label>
-                          <input 
-                            type="checkbox" 
-                            checked={selectedClubs.includes(clubId)}
-                            onChange={() => handleCheckboxChange(clubId)}
-                          />
-                          <span className="club-info">
+                          {!isViewer && (
+                            <input 
+                              type="checkbox" 
+                              checked={selectedClubs.includes(clubId)}
+                              onChange={() => handleCheckboxChange(clubId)}
+                            />
+                          )}
+                          <span className="club-info" style={{ marginLeft: isViewer ? '0' : '8px' }}>
                             {club ? club.name : clubId} <small>({club ? club.location : '알 수 없음'})</small>
                           </span>
                         </label>
@@ -152,7 +162,7 @@ function StampManagementModal({ student, onClose, onStampChange }) {
               </div>
             ) : <p>획득한 스탬프가 없습니다.</p>}
             
-            {(student.missionClear || student.couponUsed) && (
+            {!isViewer && (student.missionClear || student.couponUsed) && (
               <div className="coupon-actions">
                 <button onClick={handleCouponReset} className="reset-coupon-button">
                   쿠폰 사용 초기화
@@ -176,6 +186,8 @@ function StudentStatus() {
   const [error, setError] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'totalStamps', direction: 'descending' });
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const adminRole = sessionStorage.getItem('adminRole');
+  const isViewer = adminRole === 'viewer';
 
   const fetchData = useCallback(async () => {
     try {
@@ -290,7 +302,7 @@ function StudentStatus() {
               <th onClick={() => requestSort('couponUsed')} className="sortable-header">
                 쿠폰 사용 여부 {sortConfig.key === 'couponUsed' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : ''}
               </th>
-              <th>관리</th>
+              <th>{isViewer ? '상세' : '관리'}</th>
             </tr>
           </thead>
           <tbody>
@@ -302,7 +314,7 @@ function StudentStatus() {
                 <td>{student.couponUsed ? '✅ 사용' : '❌ 미사용'}</td>
                 <td>
                   <button onClick={() => setSelectedStudent(student)} className="manage-button">
-                    관리
+                    {isViewer ? '상세' : '관리'}
                   </button>
                 </td>
               </tr>
